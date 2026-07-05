@@ -5,7 +5,7 @@ metadata:
   name: ratel-postgres
 
 spec:
-  serviceName: "postgres"
+  serviceName: "ratel-postgres"
   replicas: 1
   selector:
     matchLabels:
@@ -33,6 +33,36 @@ spec:
 
             - name: postgres-init-scripts
               mountPath: /docker-entrypoint-initdb.d
+
+          startupProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            periodSeconds: 5
+            failureThreshold: 60
+
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
 
       volumes:
         - name: postgres-init-scripts
