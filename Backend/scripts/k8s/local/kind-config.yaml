@@ -9,5 +9,8 @@ nodes:
         hostPort: 9000
         protocol: TCP
 
-- role: worker
+      - containerPort: 30001
+        hostPort: 5432
+        protocol: TCP
+
 - role: worker

@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: ratel-postgres
+
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ratel-postgres
+
+  template:
+    metadata:
+      labels:
+        app: ratel-postgres
+
+    spec:
+      containers:
+        - name: ratel-postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "dQB4DblsWvPsMCf6bA2eD3KnMT2Lpq8r"
+
+          volumeMounts:
+            - name: ratel-postgres
+              mountPath: /var/lib/postgresql/data
+
+            - name: postgres-init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        - name: postgres-init-scripts
+          configMap:
+            name: postgres-init-scripts
+
+  volumeClaimTemplates:
+    - metadata:
+        name: ratel-postgres
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
+# Port export
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratel-postgres
+
+spec:
+  type: NodePort
+
+  selector:
+    app: ratel-postgres
+
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30001
+
+---
+
+# Initial database config
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: postgres-init-scripts
+
+data:
+  setup_db.sql: |
+    create role ratel_backend_users login password 'ddTAR38WtYsAwZE1vZNJw3fHp754fasf';
+    alter user ratel_backend_users createdb;
+    create database ratel_backend_users owner ratel_backend_users;

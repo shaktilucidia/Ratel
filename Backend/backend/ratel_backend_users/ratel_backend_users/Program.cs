@@ -17,11 +17,22 @@
 using System.IO.Compression;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using ratel_backend_users.DAO.Contexts;
+using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.Models.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Settings
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+
+#endregion
 
 builder.Services.AddControllers();
 
@@ -63,7 +74,39 @@ builder.Services.AddControllers();
     });
 #endregion
 
-#region Authentication
+#region  DB Contexts
+
+// Main
+builder.Services.AddDbContext<MainDbContext>
+(
+    options
+        =>
+        options
+            .UseNpgsql
+            (
+                builder
+                    .Configuration
+                    .GetConnectionString("MainConnection")
+            ),
+            ServiceLifetime.Transient
+);
+
+#endregion
+
+#region Identity framework
+
+    // Identity
+    builder.Services.AddIdentity<CreatureDbo, CreatureRoleDbo>()  
+        .AddEntityFrameworkStores<MainDbContext>()  
+        .AddDefaultTokenProviders();
+
+    // JWT settings
+    var jwtSettings = builder
+        .Configuration
+        .GetSection(nameof(JwtSettings))
+        .Get<JwtSettings>();
+
+    _ = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings), "JWT settings not specified");
 
     builder.Services.AddAuthentication(options =>  
     {  
@@ -72,7 +115,7 @@ builder.Services.AddControllers();
         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;  
     })  
         
-    // Adding Jwt Bearer  
+    // Adding Jwt Bearer
     .AddJwtBearer(options =>  
         {  
             options.SaveToken = true;  
@@ -81,9 +124,9 @@ builder.Services.AddControllers();
             {  
                 ValidateIssuer = true,  
                 ValidateAudience = true,  
-                ValidAudience = "http://127.0.0.1:9000",  
-                ValidIssuer = "http://127.0.0.1:9000",  
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("qdTvZEUUzKwf0o3ncp0pl7k7Zp1ZxXGSRBXGqjFbYESyZ9tTjgI7AAcwKMDh9ZE9"))  
+                ValidAudience = jwtSettings.ValidAudience,  
+                ValidIssuer = jwtSettings.ValidIssuer,  
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))  
             };  
         }
     );
@@ -133,5 +176,20 @@ app.UseAuthorization();
 app.UseResponseCompression();
 
 app.MapControllers();
+
+#region  Apply migrations mode
+
+if (args.Contains("apply_migrations"))
+{
+    using var scope = app.Services.CreateScope();
+
+    var db = scope.ServiceProvider.GetRequiredService<MainDbContext>();
+
+    await db.Database.MigrateAsync();
+
+    return;
+}
+
+#endregion
 
 app.Run();

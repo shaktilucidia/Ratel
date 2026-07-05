@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: ratel-migrate-backend-users
+
+spec:
+  backoffLimit: 3
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: ratel-migrate-backend-users
+          image: ratel_migrate_backend_users:latest
+          imagePullPolicy: IfNotPresent
+
+          command: ["/bin/sh", "-c"]
+          args:
+          - |
+              set -e
+
+              echo "Waiting for DB..."
+
+              until pg_isready -h ratel-postgres -p 5432; do
+              sleep 2
+              done
+
+              echo "Running migrations..."
+
+              dotnet ratel_backend_users.dll apply_migrations
