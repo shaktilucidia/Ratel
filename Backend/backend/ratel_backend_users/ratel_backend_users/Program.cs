@@ -25,8 +25,20 @@ using Microsoft.OpenApi;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Models.Settings;
+using ratel_backend_users.Services.Abstract;
+using ratel_backend_users.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region DI
+
+    #region Scoped
+
+    builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+
+    #endregion
+
+#endregion
 
 #region Settings
 
@@ -163,11 +175,12 @@ builder.Services.AddDbContext<MainDbContext>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// TODO: Uncomment me to disable Swagger in prod
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseAuthentication();
 app.UseCors();

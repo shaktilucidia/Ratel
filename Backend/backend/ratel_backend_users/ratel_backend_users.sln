@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ratel_backend_users", "ratel_backend_users\ratel_backend_users.csproj", "{898BCBFC-57BA-4A22-B1EA-C4073AA18315}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ratel_backend_users_dtos", "ratel_backend_users_dtos\ratel_backend_users_dtos.csproj", "{F02D4C48-0650-4A19-ADA3-7B71AB8B4073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{898BCBFC-57BA-4A22-B1EA-C4073AA18315}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{898BCBFC-57BA-4A22-B1EA-C4073AA18315}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{898BCBFC-57BA-4A22-B1EA-C4073AA18315}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F02D4C48-0650-4A19-ADA3-7B71AB8B4073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F02D4C48-0650-4A19-ADA3-7B71AB8B4073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F02D4C48-0650-4A19-ADA3-7B71AB8B4073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F02D4C48-0650-4A19-ADA3-7B71AB8B4073}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

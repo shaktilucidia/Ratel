@@ -22,7 +22,6 @@ namespace ratel_backend_users.Controllers;
 /// <summary>
 /// Healthcheck controller (for k8s)
 /// </summary>
-[AllowAnonymous]
 [Route("api/users/health")]
 [ApiController]
 public class HealthController : ControllerBase
@@ -31,6 +30,7 @@ public class HealthController : ControllerBase
     /// Checks if service has started
     /// </summary>
     /// <returns>200 if service started</returns>
+    [AllowAnonymous]
     [HttpGet]
     [Route("is_started")]
     public async Task<ActionResult> IsStartedAsync()
@@ -42,6 +42,7 @@ public class HealthController : ControllerBase
     /// Checks is service alive
     /// </summary>
     /// <returns>200 if service alive</returns>
+    [AllowAnonymous]
     [HttpGet]
     [Route("is_alive")]
     public async Task<ActionResult> IsAliveAsync()
@@ -53,6 +54,7 @@ public class HealthController : ControllerBase
     /// Checks is service ready
     /// </summary>
     /// <returns>200 if service is ready</returns>
+    [AllowAnonymous]
     [HttpGet]
     [Route("is_ready")]
     public async Task<ActionResult> IsReadyAsync()
