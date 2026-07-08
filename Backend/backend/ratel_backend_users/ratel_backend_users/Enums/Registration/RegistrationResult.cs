@@ -14,27 +14,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using ratel_backend_users.Enums.Registration;
-using ratel_backend_users.Models.Business.Creatures;
-
-namespace ratel_backend_users.Services.Abstract;
+namespace ratel_backend_users.Enums.Registration;
 
 /// <summary>
-/// Service, used to register users
+/// Possible registration results
 /// </summary>
-public interface IRegistrationService
+public enum RegistrationResult
 {
     /// <summary>
-    /// Checks if login available or not
+    /// Successfully created
     /// </summary>
-    /// <returns>True if login is available</returns>
-    Task<bool> IsLoginAvailableAsync(string login);
-
+    Created,
+    
     /// <summary>
-    /// Register creature
+    /// Empty login
     /// </summary>
-    /// <param name="login">Creature's login</param>
-    /// <param name="password">Creature's password</param>
-    /// <returns>Registration result and creature (if registration was successfull)</returns>
-    Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password);
+    FailedLoginEmpty,
+    
+    /// <summary>
+    /// Login is taken
+    /// </summary>
+    FailedLoginTaken,
+    
+    /// <summary>
+    /// Empty password
+    /// </summary>
+    FailedPasswordEmpty,
+    
+    /// <summary>
+    /// Password too weak
+    /// </summary>
+    FailedPasswordTooWeak
 }

@@ -23,6 +23,10 @@ namespace ratel_backend_users_dtos.Registration.DTOs;
 /// </summary>
 public class IsLoginAvailableRequestDto
 {
+    /// <summary>
+    /// Login to check
+    /// </summary>
+    [JsonPropertyOrder(0)]
     [JsonPropertyName("login")]
     public required string Login { get; set; }
 }

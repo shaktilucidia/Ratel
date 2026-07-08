@@ -16,6 +16,8 @@
 
 using Microsoft.AspNetCore.Identity;
 using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.Enums.Registration;
+using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
 
 namespace ratel_backend_users.Services.Implementation;
@@ -30,5 +32,42 @@ public class RegistrationService
         _ = login ?? throw new ArgumentNullException(nameof(login), "Login must be specified, at least empty string.");
         
         return await userManager.FindByNameAsync(login) == null;
+    }
+
+    public async Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password)
+    {
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedLoginEmpty, null);
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedPasswordEmpty, null);
+        }
+
+        if (await userManager.FindByNameAsync(login) != null)
+        {
+            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedLoginTaken, null);
+        }
+    
+        var creatureDbo = new CreatureDbo()
+        {  
+            UserName = login,
+            SecurityStamp = Guid.NewGuid().ToString() // TODO: Is this secure?
+        };  
+    
+        var result = await userManager.CreateAsync(creatureDbo, password);
+        if (!result.Succeeded)
+        {
+            // Mostly probably password is too weak
+            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedPasswordTooWeak, null);
+        }
+        
+        var creature = new Creature(creatureDbo);
+        
+        // TODO: Add roles
+
+        return new Tuple<RegistrationResult, Creature?>(RegistrationResult.Created, creature);
     }
 }

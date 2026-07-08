@@ -14,27 +14,48 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using ratel_backend_users.Enums.Registration;
-using ratel_backend_users.Models.Business.Creatures;
+using ratel_backend_users.DAO.Models.Creatures;
 
-namespace ratel_backend_users.Services.Abstract;
+namespace ratel_backend_users.Models.Business.Creatures;
 
 /// <summary>
-/// Service, used to register users
+/// Just a creature
 /// </summary>
-public interface IRegistrationService
+public class Creature
 {
     /// <summary>
-    /// Checks if login available or not
+    /// User ID
     /// </summary>
-    /// <returns>True if login is available</returns>
-    Task<bool> IsLoginAvailableAsync(string login);
+    public Guid Id { get; }
 
     /// <summary>
-    /// Register creature
+    /// User login
     /// </summary>
-    /// <param name="login">Creature's login</param>
-    /// <param name="password">Creature's password</param>
-    /// <returns>Registration result and creature (if registration was successfull)</returns>
-    Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password);
+    public string Login { get; }
+
+    public Creature
+    (
+        Guid id,
+        string login
+    )
+    {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("ID cannot be empty", nameof(id));
+        }
+
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            throw new ArgumentException("Login cannot be empty", nameof(login));
+        }
+        
+        Id = id;
+        Login = login;
+    }
+
+    public Creature(CreatureDbo creatureDbo)
+    {
+        Id = creatureDbo.Id;
+        Login = creatureDbo.UserName ?? throw new ArgumentNullException(nameof(creatureDbo.UserName));
+    }
 }

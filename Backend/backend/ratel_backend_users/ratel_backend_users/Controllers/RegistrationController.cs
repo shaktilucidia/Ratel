@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using ratel_backend_users_dtos.Registration.DTOs;
 using ratel_backend_users_dtos.Registration.Requests;
 using ratel_backend_users_dtos.Registration.Responses;
+using ratel_backend_users.Extensions.Registration;
 using ratel_backend_users.Services.Abstract;
 
 namespace ratel_backend_users.Controllers;
@@ -53,5 +54,23 @@ public class RegistrationController
                 }
             }
         );
+    }
+
+    /// <summary>
+    /// Register a creature
+    /// </summary>
+    [AllowAnonymous]
+    [Route("register")]
+    [HttpPost]
+    public async Task<IActionResult> RegisterAsync([FromBody] CreatureRegistrationRequest request)
+    {
+        _ = request ?? throw new ArgumentNullException(nameof(request), "Request must be provided");
+
+        return this
+            .ToActionResult
+            (
+                (await registrationService.RegisterAsync(request.RegistrationData.Login, request.RegistrationData.Password))
+                .Item1
+            );
     }
 }

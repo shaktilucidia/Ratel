@@ -14,27 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using ratel_backend_users.Enums.Registration;
-using ratel_backend_users.Models.Business.Creatures;
+using System.Text.Json.Serialization;
+using ratel_backend_users_dtos.Registration.DTOs;
 
-namespace ratel_backend_users.Services.Abstract;
+namespace ratel_backend_users_dtos.Registration.Requests;
 
 /// <summary>
-/// Service, used to register users
+/// Request to register creature
 /// </summary>
-public interface IRegistrationService
+public class CreatureRegistrationRequest
 {
     /// <summary>
-    /// Checks if login available or not
+    /// Creature registration data
     /// </summary>
-    /// <returns>True if login is available</returns>
-    Task<bool> IsLoginAvailableAsync(string login);
-
-    /// <summary>
-    /// Register creature
-    /// </summary>
-    /// <param name="login">Creature's login</param>
-    /// <param name="password">Creature's password</param>
-    /// <returns>Registration result and creature (if registration was successfull)</returns>
-    Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password);
+    [JsonPropertyOrder(0)]
+    [JsonPropertyName("registration_data")]
+    public required CreatureRegistrationDataDto RegistrationData { get; set; }
 }

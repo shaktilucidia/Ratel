@@ -27,6 +27,7 @@ public class IsLoginAvailableRequest
     /// <summary>
     /// Login availability request data
     /// </summary>
+    [JsonPropertyOrder(0)]
     [JsonPropertyName("login_availability_request_data")]
     public required IsLoginAvailableRequestDto LoginData { get; set; }
 }

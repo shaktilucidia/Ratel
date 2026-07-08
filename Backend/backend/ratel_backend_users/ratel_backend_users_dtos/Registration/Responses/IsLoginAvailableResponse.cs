@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Text.Json.Serialization;
 using ratel_backend_users_dtos.Registration.DTOs;
 
 namespace ratel_backend_users_dtos.Registration.Responses;
@@ -26,5 +27,7 @@ public class IsLoginAvailableResponse
     /// <summary>
     /// Login availability data
     /// </summary>
+    [JsonPropertyOrder(0)]
+    [JsonPropertyName("availability_data")]
     public required IsLoginAvailableResponseDto AvailabilityData { get; set; }
 }

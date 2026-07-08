@@ -113,6 +113,17 @@ builder.Services.AddDbContext<MainDbContext>
         .AddEntityFrameworkStores<MainDbContext>()  
         .AddDefaultTokenProviders();
 
+    builder.Services.Configure<IdentityOptions>(options =>
+    {
+        // Password settings
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequiredUniqueChars = 4;
+    });
+
     // JWT settings
     var jwtSettings = builder
         .Configuration
