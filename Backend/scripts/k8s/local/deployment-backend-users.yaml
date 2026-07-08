@@ -20,6 +20,10 @@ spec:
         image: ratel_backend_users:latest
         imagePullPolicy: IfNotPresent
 
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+
         ports:
         - containerPort: 9000
 

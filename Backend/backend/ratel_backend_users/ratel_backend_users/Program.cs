@@ -22,12 +22,13 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
-
+    
 var builder = WebApplication.CreateBuilder(args);
 
 #region DI
@@ -175,12 +176,11 @@ builder.Services.AddDbContext<MainDbContext>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// TODO: Uncomment me to disable Swagger in prod
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseAuthentication();
 app.UseCors();
@@ -192,7 +192,7 @@ app.MapControllers();
 
 #region  Apply migrations mode
 
-if (args.Contains("apply_migrations"))
+if (args.Contains(Commandline.ApplyMigrationsArgName))
 {
     using var scope = app.Services.CreateScope();
 
