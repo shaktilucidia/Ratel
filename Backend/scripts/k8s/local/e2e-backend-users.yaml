@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: ratel-backend-users-e2e
+
+spec:
+  backoffLimit: 0
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: tests
+
+          image: ratel_backend_users_e2e:latest
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: E2E_BASE_URL
+              value: "http://ratel-backend-users:9000/api/"

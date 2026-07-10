@@ -13,10 +13,8 @@
 // 
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using FluentAssertions;
-using ratel_backend_users_client.Services.Implementations;
 using ratel_backend_users_e2e.Auxilliary;
+using Shouldly;
 
 namespace ratel_backend_users_e2e.Tests;
 
@@ -45,7 +43,7 @@ public class RegistrationTests(ApiFixture fixture) : IClassFixture<ApiFixture>
 
         #region Assert
 
-        isAvailable.Should().BeTrue();
+        isAvailable.ShouldBe(true);
 
         #endregion
     }
