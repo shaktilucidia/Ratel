@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Assets/Logo/logo_vector.svg" width="200">
+  <img src="Assets/Logo/logo_vector.svg" width="400">
 </p>
 
 # Ratel
