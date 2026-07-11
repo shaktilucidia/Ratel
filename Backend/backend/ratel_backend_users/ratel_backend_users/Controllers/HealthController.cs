@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ratel_backend_users.Services.Abstract;
 
 namespace ratel_backend_users.Controllers;
 
@@ -24,7 +25,11 @@ namespace ratel_backend_users.Controllers;
 /// </summary>
 [Route("api/users/health")]
 [ApiController]
-public class HealthController : ControllerBase
+public class HealthController
+(
+    IHealthService healthService
+)
+: ControllerBase
 {
     /// <summary>
     /// Checks if service has started
@@ -59,6 +64,9 @@ public class HealthController : ControllerBase
     [Route("is_ready")]
     public async Task<ActionResult> IsReadyAsync()
     {
-        return Ok();
+        return
+            await healthService.IsReadyAsync()
+                ? Ok()
+                : StatusCode(StatusCodes.Status503ServiceUnavailable);
     }
 }

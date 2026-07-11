@@ -20,7 +20,11 @@ echo "Stage 3: Waiting for cluster spin-up"
 
 kubectl rollout status deployment/ratel-backend-users --timeout=300s
 
-sleep 60 # TODO: Dirty, will be fixed when readiness endpoint will be implemented
+# Waiting for backend
+kubectl wait \
+  --for=condition=Ready \
+  pod \
+  -l app=ratel-backend-users
 
 echo "Stage 4: Running tests"
 

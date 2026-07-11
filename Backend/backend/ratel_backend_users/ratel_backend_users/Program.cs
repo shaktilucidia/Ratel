@@ -36,6 +36,7 @@ var builder = WebApplication.CreateBuilder(args);
     #region Scoped
 
     builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+    builder.Services.AddScoped<IHealthService, HealthService>();
 
     #endregion
 
