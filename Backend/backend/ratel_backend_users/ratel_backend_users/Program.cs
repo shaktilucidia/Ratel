@@ -1,16 +1,16 @@
 // Ratel - Opensource federated messenger
 // Copyright (C) 2026 Shakti Lucidia
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -28,7 +28,8 @@ using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
-    
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 #region DI
@@ -57,7 +58,7 @@ builder.Services.AddControllers();
         options.Providers.Add<BrotliCompressionProvider>(); // Brotli is widespread
         options.Providers.Add<GzipCompressionProvider>(); // GZIP as fallback
     });
-                
+
     builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
     {
         options.Level = CompressionLevel.SmallestSize;
@@ -110,8 +111,8 @@ builder.Services.AddDbContext<MainDbContext>
 #region Identity framework
 
     // Identity
-    builder.Services.AddIdentity<CreatureDbo, CreatureRoleDbo>()  
-        .AddEntityFrameworkStores<MainDbContext>()  
+    builder.Services.AddIdentity<CreatureDbo, CreatureRoleDbo>()
+        .AddEntityFrameworkStores<MainDbContext>()
         .AddDefaultTokenProviders();
 
     builder.Services.Configure<IdentityOptions>(options =>
@@ -133,26 +134,26 @@ builder.Services.AddDbContext<MainDbContext>
 
     _ = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings), "JWT settings not specified");
 
-    builder.Services.AddAuthentication(options =>  
-    {  
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;  
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;  
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;  
-    })  
-        
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+
     // Adding Jwt Bearer
-    .AddJwtBearer(options =>  
-        {  
-            options.SaveToken = true;  
-            options.RequireHttpsMetadata = false;  
-            options.TokenValidationParameters = new TokenValidationParameters()  
-            {  
-                ValidateIssuer = true,  
-                ValidateAudience = true,  
-                ValidAudience = jwtSettings.ValidAudience,  
-                ValidIssuer = jwtSettings.ValidIssuer,  
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))  
-            };  
+    .AddJwtBearer(options =>
+        {
+            options.SaveToken = true;
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = jwtSettings.ValidAudience,
+                ValidIssuer = jwtSettings.ValidIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+            };
         }
     );
 
@@ -166,7 +167,7 @@ builder.Services.AddDbContext<MainDbContext>
         sgo =>
         {
             sgo.SwaggerDoc("v1", new OpenApiInfo() { Title = "Ratel users API", Version = "v1" });
-        
+
             sgo.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -175,13 +176,36 @@ builder.Services.AddDbContext<MainDbContext>
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer"
             });
-            
+
             sgo.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
         }
     );
+
+#endregion
+
+#region Logging
+
+    #region Serilog
+
+        builder.Host.UseSerilog
+        (
+            (context, configuration)
+            =>
+            configuration
+                .ReadFrom
+                .Configuration(context.Configuration)
+                .Enrich
+                .WithProperty("Service", "ratel-backend-users") // Hardcoded, service name is specified at code level, not k8s-level
+                .Enrich
+                .WithProperty("Version", typeof(Program).Assembly.GetName().Version!.ToString())
+                .Enrich
+                .WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+        );
+
+    #endregion
 
 #endregion
 

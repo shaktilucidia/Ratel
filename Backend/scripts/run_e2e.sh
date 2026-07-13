@@ -37,9 +37,10 @@ kubectl wait \
 
 kubectl logs job/ratel-backend-users-e2e
 
+kubectl delete job ratel-backend-users-e2e
+
 echo "Stage 5: Cleanup"
 
-kubectl delete job ratel-backend-users-e2e
 kind delete cluster --name ratel-testing
 
 exit 0
