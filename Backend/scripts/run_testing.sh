@@ -15,6 +15,7 @@ kind delete cluster --name ratel-testing
 echo "Stage 2: Creating cluster"
 
 kind create cluster --config kind-config.yaml
+kubectl apply -f namespace-monitoring.yaml
 
 
 echo "Stage 3: Loading images"
@@ -25,16 +26,17 @@ kind load docker-image ratel_migrate_backend_users:latest --name ratel-testing
 
 echo "Stage 4: Applying infrastructure deployment"
 
-kubectl apply -f deployment-postgres.yaml
+kubectl apply -f backend/infrastructure/database
+kubectl apply -f backend/infrastructure/monitoring/grafana
 
 
 echo "Stage 5: Applying migrations deployment"
 
-kubectl apply -f migrate-backend-users.yaml
+kubectl apply -f backend/microservices/users/migrate-backend-users.yaml
 
 
 echo "Stage 6: Applying backend deployment"
 
-kubectl apply -f deployment-backend-users.yaml
+kubectl apply -f backend/microservices/users/deployment-backend-users.yaml
 
 exit 0
