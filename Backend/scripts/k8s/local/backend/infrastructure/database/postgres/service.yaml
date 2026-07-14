@@ -1,0 +1,17 @@
+# Port export
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratel-postgres
+  namespace: ratel-backend
+
+spec:
+  type: NodePort
+
+  selector:
+    app: ratel-postgres
+
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30001

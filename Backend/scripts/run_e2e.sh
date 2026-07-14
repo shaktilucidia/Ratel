@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-echo "Stage 0: Spinning up testing cluster"
+echo "Stage 0: Building testing images"
+
+./build/build_e2e.sh
+
+echo "Stage 1: Spinning up testing cluster"
 
 ./run_testing.sh
 
-
-echo "Stage 1: Building testing images"
-
-cd build
-./build_e2e.sh
-
-cd ../k8s/local
+cd k8s/local
 
 echo "Stage 2: Loading testing images"
 
@@ -18,13 +16,13 @@ kind load docker-image ratel_backend_users_e2e:latest --name ratel-testing
 
 echo "Stage 3: Waiting for cluster spin-up"
 
-kubectl rollout status deployment/ratel-backend-users --timeout=300s
+kubectl rollout status deployment/ratel-backend-users -n ratel-backend --timeout=300s
 
 # Waiting for backend
 kubectl wait \
   --for=condition=Ready \
   pod \
-  -l app=ratel-backend-users
+  -l app=ratel-backend-users -n ratel-backend
 
 echo "Stage 4: Running tests"
 
@@ -32,12 +30,12 @@ kubectl apply -f backend/microservices/users/e2e-backend-users.yaml
 
 kubectl wait \
   --for=condition=complete \
-  job/ratel-backend-users-e2e \
+  job/ratel-backend-users-e2e -n ratel-backend \
   --timeout=300s
 
-kubectl logs job/ratel-backend-users-e2e
+kubectl logs job/ratel-backend-users-e2e -n ratel-backend
 
-kubectl delete job ratel-backend-users-e2e
+kubectl delete job ratel-backend-users-e2e -n ratel-backend
 
 echo "Stage 5: Cleanup"
 

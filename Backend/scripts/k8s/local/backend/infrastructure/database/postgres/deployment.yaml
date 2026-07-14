@@ -3,6 +3,7 @@ kind: StatefulSet
 
 metadata:
   name: ratel-postgres
+  namespace: ratel-backend
 
 spec:
   serviceName: "ratel-postgres"
@@ -25,7 +26,16 @@ spec:
 
           env:
             - name: POSTGRES_PASSWORD
-              value: "dQB4DblsWvPsMCf6bA2eD3KnMT2Lpq8r"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres-password
+
+            - name: RATEL_BACKEND_USERS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: ratel-backend-users-password
 
           volumeMounts:
             - name: ratel-postgres
@@ -77,37 +87,3 @@ spec:
         resources:
           requests:
             storage: 10Gi
-
----
-
-# Port export
-apiVersion: v1
-kind: Service
-metadata:
-  name: ratel-postgres
-
-spec:
-  type: NodePort
-
-  selector:
-    app: ratel-postgres
-
-  ports:
-    - port: 5432
-      targetPort: 5432
-      nodePort: 30001
-
----
-
-# Initial database config
-apiVersion: v1
-kind: ConfigMap
-
-metadata:
-  name: postgres-init-scripts
-
-data:
-  setup_db.sql: |
-    create role ratel_backend_users login password 'ddTAR38WtYsAwZE1vZNJw3fHp754fasf';
-    alter user ratel_backend_users createdb;
-    create database ratel_backend_users owner ratel_backend_users;

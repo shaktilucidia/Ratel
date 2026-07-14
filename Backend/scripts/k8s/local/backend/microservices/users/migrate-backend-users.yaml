@@ -3,6 +3,7 @@ kind: Job
 
 metadata:
   name: ratel-migrate-backend-users
+  namespace: ratel-backend
 
 spec:
   backoffLimit: 3

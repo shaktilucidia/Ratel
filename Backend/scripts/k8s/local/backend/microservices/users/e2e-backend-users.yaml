@@ -3,6 +3,7 @@ kind: Job
 
 metadata:
   name: ratel-backend-users-e2e
+  namespace: ratel-backend
 
 spec:
   backoffLimit: 0

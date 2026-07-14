@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: postgres-init-scripts
+  namespace: ratel-backend
+
+data:
+  setup_db.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username postgres <<EOF
+    CREATE ROLE ratel_backend_users
+      LOGIN
+      PASSWORD '${RATEL_BACKEND_USERS_PASSWORD}';
+
+    ALTER ROLE ratel_backend_users CREATEDB;
+
+    CREATE DATABASE ratel_backend_users
+      OWNER ratel_backend_users;
+    EOF
