@@ -33,11 +33,11 @@ kubectl apply -f backend/infrastructure/monitoring/grafana
 
 echo "Stage 5: Applying migrations deployment"
 
-kubectl apply -f backend/microservices/users/migrate-backend-users.yaml
+kubectl apply -f backend/microservices/users/migrations
 
 
 echo "Stage 6: Applying backend deployment"
 
-kubectl apply -f backend/microservices/users/deployment-backend-users.yaml
+kubectl apply -f backend/microservices/users/instance
 
 exit 0

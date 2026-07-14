@@ -26,7 +26,7 @@ kubectl wait \
 
 echo "Stage 4: Running tests"
 
-kubectl apply -f backend/microservices/users/e2e-backend-users.yaml
+kubectl apply -f backend/microservices/users/tests
 
 kubectl wait \
   --for=condition=complete \
