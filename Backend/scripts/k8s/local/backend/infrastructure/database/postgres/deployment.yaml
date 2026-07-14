@@ -38,7 +38,7 @@ spec:
                   key: ratel-backend-users-password
 
           volumeMounts:
-            - name: ratel-postgres
+            - name: postgres-storage
               mountPath: /var/lib/postgresql/data
 
             - name: postgres-init-scripts
@@ -79,11 +79,6 @@ spec:
           configMap:
             name: postgres-init-scripts
 
-  volumeClaimTemplates:
-    - metadata:
-        name: ratel-postgres
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-storage
