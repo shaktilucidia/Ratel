@@ -30,7 +30,8 @@ echo "Stage 4: Applying infrastructure deployment"
 kubectl apply -f backend/infrastructure/database/postgres
 kubectl apply -f backend/infrastructure/monitoring/grafana
 kubectl apply -f backend/infrastructure/monitoring/loki
-kubectl apply -f backend/infrastructure/monitoring/fluentbit/
+kubectl apply -f backend/infrastructure/monitoring/fluentbit
+kubectl apply -f backend/infrastructure/monitoring/tempo
 
 
 echo "Stage 5: Applying migrations deployment"
