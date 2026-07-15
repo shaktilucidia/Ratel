@@ -22,6 +22,9 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Npgsql;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
@@ -91,21 +94,46 @@ builder.Services.AddControllers();
 
 #region  DB Contexts
 
-// Main
-builder.Services.AddDbContext<MainDbContext>
-(
-    options
-        =>
-        options
-            .UseNpgsql
-            (
-                builder
-                    .Configuration
-                    .GetConnectionString("MainConnection")
-            ),
-            ServiceLifetime.Transient
-);
+    #region Main
 
+        var mainDataSourceBuilder = new NpgsqlDataSourceBuilder
+        (
+            builder.Configuration.GetConnectionString("MainConnection")
+            ??
+            throw new InvalidOperationException("Main connection string is not set")
+        );
+
+        mainDataSourceBuilder.ConfigureTracing
+        (
+            options
+            =>
+            {
+                options.ConfigureCommandSpanNameProvider(command =>
+                {
+                    // Span name in traces
+                    return $"PostgreSQL {command.CommandText.Split(' ')[0]}";
+                });
+
+                options.ConfigureCommandFilter(command =>
+                {
+                    // Do not trace tiny SELECT 1 queries, they are used for health checks and are not important
+                    return !command.CommandText.StartsWith("SELECT 1");
+                });
+            }
+        );
+
+        var mainDataSource = mainDataSourceBuilder.Build();
+
+        builder.Services.AddSingleton(mainDataSource);
+
+        builder.Services.AddDbContext<MainDbContext>
+        (
+            options
+            =>
+            options.UseNpgsql(mainDataSource), ServiceLifetime.Transient
+        );
+
+    #endregion
 #endregion
 
 #region Identity framework
@@ -190,19 +218,54 @@ builder.Services.AddDbContext<MainDbContext>
 
     #region Serilog
 
-        builder.Host.UseSerilog
+        builder
+            .Host
+            .UseSerilog
+            (
+                (context, configuration)
+                =>
+                configuration
+                    .ReadFrom
+                    .Configuration(context.Configuration)
+                    .Enrich
+                    .WithProperty("Service", Microservice.Name)
+                    .Enrich
+                    .WithProperty("Version", typeof(Program).Assembly.GetName().Version!.ToString())
+                    .Enrich
+                    .WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+            );
+
+    #endregion
+
+    #region OpenTelemetry
+
+    builder
+        .Services
+        .AddOpenTelemetry()
+        .WithTracing
         (
-            (context, configuration)
-            =>
-            configuration
-                .ReadFrom
-                .Configuration(context.Configuration)
-                .Enrich
-                .WithProperty("Service", "ratel-backend-users") // Hardcoded, service name is specified at code level, not k8s-level
-                .Enrich
-                .WithProperty("Version", typeof(Program).Assembly.GetName().Version!.ToString())
-                .Enrich
-                .WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+            tracing =>
+            {
+                tracing
+                    .SetResourceBuilder
+                    (
+                        ResourceBuilder
+                            .CreateDefault()
+                            .AddService(Microservice.Name)
+                    )
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+
+                    .AddSource("Npgsql")
+
+                    .AddOtlpExporter
+                    (
+                        options =>
+                        {
+                            options.Endpoint = new Uri("http://tempo.ratel-monitoring.svc.cluster.local:4317");
+                        }
+                    );
+            }
         );
 
     #endregion
