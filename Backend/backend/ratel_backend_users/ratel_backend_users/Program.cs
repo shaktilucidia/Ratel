@@ -49,6 +49,7 @@ var builder = WebApplication.CreateBuilder(args);
 #region Settings
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+builder.Services.Configure<TempoSettings>(builder.Configuration.GetSection(nameof(TempoSettings)));
 
 #endregion
 
@@ -154,13 +155,12 @@ builder.Services.AddControllers();
         options.Password.RequiredUniqueChars = 4;
     });
 
-    // JWT settings
     var jwtSettings = builder
         .Configuration
         .GetSection(nameof(JwtSettings))
         .Get<JwtSettings>();
 
-    _ = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings), "JWT settings not specified");
+    _ = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings), "JWT settings aren't specified");
 
     builder.Services.AddAuthentication(options =>
     {
@@ -239,6 +239,13 @@ builder.Services.AddControllers();
 
     #region OpenTelemetry
 
+    var tempoSettings = builder
+        .Configuration
+        .GetSection(nameof(TempoSettings))
+        .Get<TempoSettings>();
+
+    _ = tempoSettings ?? throw new ArgumentNullException(nameof(tempoSettings), "Tempo settings aren't specified");
+
     builder
         .Services
         .AddOpenTelemetry()
@@ -262,7 +269,7 @@ builder.Services.AddControllers();
                     (
                         options =>
                         {
-                            options.Endpoint = new Uri("http://tempo.ratel-monitoring.svc.cluster.local:4317");
+                            options.Endpoint = new Uri(tempoSettings.Uri);
                         }
                     );
             }

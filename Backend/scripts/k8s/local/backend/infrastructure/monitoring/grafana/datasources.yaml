@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: grafana-datasources
+  namespace: ratel-monitoring
+
+data:
+  loki.yaml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Loki
+        uid: loki-datasource-uid
+        type: loki
+        access: proxy
+        url: http://loki:3100
+
+        jsonData:
+          derivedFields:
+            - name: TraceID
+              matcherRegex: '"TraceId":"(\w+)"'
+              datasourceUid: tempo-datasource-uid
+              url: '$${__value.raw}'
+
+  tempo.yaml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Tempo
+        uid: tempo-datasource-uid
+        type: tempo
+        access: proxy
+        url: http://tempo:3200
+        isDefault: false
+        editable: false
+
+        jsonData:
+          tracesToLogsV2:
+            datasourceUid: loki-datasource-uid
+
+            spanStartTimeShift: "-1m"
+            spanEndTimeShift: "1m"
+
+            filterByTraceID: true
+            filterBySpanID: false
