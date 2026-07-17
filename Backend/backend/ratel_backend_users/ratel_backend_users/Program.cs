@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ratel_backend_users.Constants;
@@ -273,6 +274,18 @@ builder.Services.AddControllers();
                         }
                     );
             }
+        )
+        .WithMetrics
+        (
+            metrics =>
+            {
+                metrics
+                    .AddMeter("Microsoft.EntityFrameworkCore")
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddPrometheusExporter();
+            }
         );
 
     #endregion
@@ -293,6 +306,8 @@ app.UseCors();
 app.UseAuthorization();
 
 app.UseResponseCompression();
+
+app.MapPrometheusScrapingEndpoint();
 
 app.MapControllers();
 
