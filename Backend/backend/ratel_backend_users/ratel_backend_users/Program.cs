@@ -284,7 +284,8 @@ builder.Services.AddControllers();
                     .AddAspNetCoreInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
-                    .AddPrometheusExporter();
+                    .AddPrometheusExporter()
+                    .AddMeter(Metrics.Registration);
             }
         );
 

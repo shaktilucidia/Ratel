@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Identity;
 using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Enums.Registration;
+using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
 
@@ -77,6 +78,7 @@ public class RegistrationService
 
         // TODO: Add roles
 
+        RegistrationMetrics.RegisteredUsers.Add(1, new KeyValuePair<string, object?>("is_successful", true));
         return new Tuple<RegistrationResult, Creature?>(RegistrationResult.Created, creature);
     }
 }
