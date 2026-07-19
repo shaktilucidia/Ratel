@@ -1,0 +1,45 @@
+﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+WORKDIR /source
+
+
+COPY Ratel.Backend.slnx .
+
+COPY ratel_backend_users/ratel_backend_users/*.csproj \
+     ratel_backend_users/ratel_backend_users/
+
+COPY ratel_backend_users/ratel_backend_users_dtos/*.csproj \
+     ratel_backend_users/ratel_backend_users_dtos/
+
+COPY ratel_shared/ratel_shared_observability/*.csproj \
+     ratel_shared/ratel_shared_observability/
+
+RUN dotnet restore ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj
+
+COPY . .
+
+RUN dotnet publish \
+    ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj \
+    -c Release \
+    -o /app \
+    --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime-base
+
+WORKDIR /app
+
+COPY --from=build /app .
+
+# Main app
+FROM runtime-base AS runtime
+
+ENTRYPOINT ["dotnet", "ratel_backend_users.dll", "--urls=http://+:9000"]
+
+# Migrations
+
+FROM runtime-base AS migrations
+
+# PostgreSQL client for checking is PostgreSQL ready
+RUN apt-get update \
+    && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*

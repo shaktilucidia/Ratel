@@ -33,6 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="../../ratel_shared/ratel_shared_observability/ratel_shared_observability.csproj" />
       <ProjectReference Include="..\ratel_backend_users_dtos\ratel_backend_users_dtos.csproj" />
     </ItemGroup>
 

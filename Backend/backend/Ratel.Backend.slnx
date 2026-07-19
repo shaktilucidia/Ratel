@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/ratel_backend_users/">
+    <Project Path="ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj" />
+    <Project Path="ratel_backend_users/ratel_backend_users_dtos/ratel_backend_users_dtos.csproj" />
+  </Folder>
+  <Folder Name="/ratel_shared/">
+    <Project Path="ratel_shared/ratel_shared_observability/ratel_shared_observability.csproj" />
+  </Folder>
+</Solution>

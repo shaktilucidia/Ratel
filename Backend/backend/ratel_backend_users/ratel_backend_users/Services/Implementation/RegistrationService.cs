@@ -20,6 +20,7 @@ using ratel_backend_users.Enums.Registration;
 using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
+using ratel_shared_observability.Metrics;
 
 namespace ratel_backend_users.Services.Implementation;
 
@@ -46,6 +47,8 @@ public class RegistrationService
 
     public async Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password)
     {
+        using var _ = new MetricsTimer(RegistrationMetrics.RegistrationDuration);
+
         if (string.IsNullOrWhiteSpace(login))
         {
             return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedLoginEmpty, null);
@@ -77,8 +80,8 @@ public class RegistrationService
         var creature = new Creature(creatureDbo);
 
         // TODO: Add roles
+        RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
 
-        RegistrationMetrics.RegisteredUsers.Add(1, new KeyValuePair<string, object?>("is_successful", true));
         return new Tuple<RegistrationResult, Creature?>(RegistrationResult.Created, creature);
     }
 }

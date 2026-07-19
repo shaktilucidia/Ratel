@@ -14,32 +14,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace ratel_backend_users.Metrics;
+namespace ratel_shared_observability.Metrics;
 
 /// <summary>
-/// Metrics, related to users registration
+/// Use it to measure the time taken by a block of code and record it in a histogram metric
 /// </summary>
-public static class RegistrationMetrics
+public sealed class MetricsTimer : IDisposable
 {
-    /// <summary>
-    /// Meter itself
-    /// </summary>
-    public static readonly Meter Meter = new Meter(Constants.Metrics.Registration);
+    private readonly Histogram<double> _histogram;
+    private readonly Stopwatch _stopwatch;
+    private readonly TagList _tags;
 
-    /// <summary>
-    /// Total count of registered users
-    /// </summary>
-    public static readonly Counter<long> RegistrationAttemptsCount = Meter.CreateCounter<long>("ratel_users_registration_attempts_total");
+    public MetricsTimer
+    (
+        Histogram<double> histogram,
+        TagList tags = default
+    )
+    {
+        _histogram = histogram;
+        _tags = tags;
+         _stopwatch = Stopwatch.StartNew();
+    }
 
-    /// <summary>
-    /// Registration speed
-    /// </summary>
-    public static readonly Histogram<double> RegistrationDuration
-        = Meter.CreateHistogram<double>
-        (
-            "ratel_users_registration_duration",
-            unit: "ms"
-        );
+    public void Dispose()
+    {
+        _stopwatch.Stop();
+
+        _histogram.Record(_stopwatch.Elapsed.TotalMilliseconds, _tags);
+    }
 }
