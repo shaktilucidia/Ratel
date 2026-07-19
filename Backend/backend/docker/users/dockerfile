@@ -2,7 +2,6 @@
 
 WORKDIR /source
 
-
 COPY Ratel.Backend.slnx .
 
 COPY ratel_backend_users/ratel_backend_users/*.csproj \

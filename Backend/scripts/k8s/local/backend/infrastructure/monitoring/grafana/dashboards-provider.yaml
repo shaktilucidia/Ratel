@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: grafana-dashboard-provider
+  namespace: ratel-monitoring
+
+data:
+  dashboards-provider.yaml: |
+    apiVersion: 1
+
+    providers:
+      - name: ratel
+        orgId: 1
+        folder: Ratel
+        type: file
+        disableDeletion: false
+        editable: true
+        updateIntervalSeconds: 10
+        options:
+          path: /var/lib/grafana/dashboards/ratel

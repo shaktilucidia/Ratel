@@ -39,10 +39,25 @@ spec:
             - name: grafana-storage
               mountPath: /var/lib/grafana
 
+            - name: grafana-dashboard-provider
+              mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+              subPath: dashboards-provider.yaml
+
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards/ratel
+
       volumes:
         - name: grafana-datasources
           configMap:
             name: grafana-datasources
+
+        - name: grafana-dashboard-provider
+          configMap:
+            name: grafana-dashboard-provider
+
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards-ratel
 
         - name: grafana-storage
           persistentVolumeClaim:

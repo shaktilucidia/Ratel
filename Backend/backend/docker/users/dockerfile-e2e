@@ -1,11 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:10.0
 
-
 WORKDIR /source
 
-
-COPY ratel_backend_users/ratel_backend_users.sln \
-     ratel_backend_users/
+COPY Ratel.Backend.slnx .
 
 COPY ratel_backend_users/ratel_backend_users_dtos/*.csproj \
      ratel_backend_users/ratel_backend_users_dtos/
