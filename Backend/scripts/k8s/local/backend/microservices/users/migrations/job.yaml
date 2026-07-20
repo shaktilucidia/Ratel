@@ -17,6 +17,10 @@ spec:
           image: ratel_migrate_backend_users:latest
           imagePullPolicy: IfNotPresent
 
+          envFrom:
+            - secretRef:
+                name: backend-secrets
+
           command: ["/bin/sh", "-c"]
           args:
           - |
@@ -25,7 +29,7 @@ spec:
               echo "Waiting for DB..."
 
               until pg_isready -h ratel-postgres -p 5432; do
-              sleep 2
+                sleep 2
               done
 
               echo "Running migrations..."

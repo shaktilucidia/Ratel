@@ -35,13 +35,17 @@ kubectl apply -f backend/infrastructure/monitoring/fluentbit
 kubectl apply -f backend/infrastructure/monitoring/tempo
 kubectl apply -f backend/infrastructure/monitoring/prometheus
 
+echo "Stage 5: Loading secrets"
 
-echo "Stage 5: Applying migrations deployment"
+kubectl apply -f backend/secrets
+
+
+echo "Stage 6: Applying migrations deployment"
 
 kubectl apply -f backend/microservices/users/migrations
 
 
-echo "Stage 6: Applying backend deployment"
+echo "Stage 7: Applying backend deployment"
 
 kubectl apply -f backend/microservices/users/instance
 

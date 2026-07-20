@@ -25,6 +25,10 @@ spec:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
 
+        envFrom:
+          - secretRef:
+              name: backend-secrets
+
         ports:
         - containerPort: 9000
 
