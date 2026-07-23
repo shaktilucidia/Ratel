@@ -13,17 +13,17 @@ popd
 
 echo "Loading images..."
 
-kind load docker-image ratel_backend_users:latest --name ratel-testing
-kind load docker-image ratel_migrate_backend_users:latest --name ratel-testing
+kind load docker-image ratel_backend_users:latest --name "$RATEL_CLUSTER"
+kind load docker-image ratel_migrate_backend_users:latest --name "$RATEL_CLUSTER"
 
 
 echo "Running migrations..."
 
-kubectl delete job ratel-migrate-backend-users -n ratel-backend --ignore-not-found
-kubectl apply -f ../k8s/local/backend/microservices/users/migrations
+kubectl --context "$RATEL_CONTEXT" delete job ratel-migrate-backend-users -n ratel-backend --ignore-not-found
+kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/local/backend/microservices/users/migrations
 
 
-kubectl wait \
+kubectl --context "$RATEL_CONTEXT" wait \
     --for=condition=complete \
     job/ratel-migrate-backend-users \
     -n ratel-backend \
@@ -31,9 +31,9 @@ kubectl wait \
 
 echo "Restarting deployment..."
 
-kubectl apply -f ../k8s/local/backend/microservices/users/instance
+kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/local/backend/microservices/users/instance
 
-kubectl rollout restart deployment ratel-backend-users -n ratel-backend
-kubectl rollout status deployment ratel-backend-users -n ratel-backend
+kubectl --context "$RATEL_CONTEXT" rollout restart deployment ratel-backend-users -n ratel-backend
+kubectl --context "$RATEL_CONTEXT" rollout status deployment ratel-backend-users -n ratel-backend
 
 exit 0

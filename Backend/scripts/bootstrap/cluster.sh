@@ -5,18 +5,18 @@ cd ../k8s/local
 
 echo "Deleting old cluster"
 
-kind delete cluster --name ratel-testing
+kind delete cluster --name "$RATEL_CLUSTER"
 
 
 echo "Stage 1: Creating cluster"
 
-kind create cluster --config kind-config.yaml
+kind create cluster --config "$RATEL_CONTEXT.yaml"
 
 
 echo "Creating namespaces"
 
-kubectl apply -f namespace-backend.yaml
-kubectl apply -f namespace-monitoring.yaml
+kubectl --context "$RATEL_CONTEXT" apply -f namespace-backend.yaml
+kubectl --context "$RATEL_CONTEXT" apply -f namespace-monitoring.yaml
 
 
 exit 0

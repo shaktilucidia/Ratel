@@ -6,11 +6,11 @@ echo "Deploying FluentBit"
 pwd
 pushd ../k8s/local
 
-    kubectl apply -f backend/infrastructure/monitoring/fluentbit
+    kubectl --context "$RATEL_CONTEXT" apply -f backend/infrastructure/monitoring/fluentbit
 
 popd
 
-kubectl rollout restart daemonset/fluent-bit -n ratel-monitoring
-kubectl rollout status daemonset/fluent-bit -n ratel-monitoring
+kubectl --context "$RATEL_CONTEXT" rollout restart daemonset/fluent-bit -n ratel-monitoring
+kubectl --context "$RATEL_CONTEXT" rollout status daemonset/fluent-bit -n ratel-monitoring
 
 exit 0

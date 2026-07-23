@@ -6,11 +6,11 @@ echo "Deploying Tempo"
 pwd
 pushd ../k8s/local
 
-    kubectl apply -f backend/infrastructure/monitoring/tempo
+    kubectl --context "$RATEL_CONTEXT" apply -f backend/infrastructure/monitoring/tempo
 
 popd
 
-kubectl rollout restart deployment/tempo -n ratel-monitoring
-kubectl rollout status deployment/tempo -n ratel-monitoring
+kubectl --context "$RATEL_CONTEXT" rollout restart deployment/tempo -n ratel-monitoring
+kubectl --context "$RATEL_CONTEXT" rollout status deployment/tempo -n ratel-monitoring
 
 exit 0
