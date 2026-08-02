@@ -85,7 +85,7 @@ public static class RegistrationResultExtension
     };
 
     /// <summary>
-    /// Descriptions, related to erros
+    /// Descriptions, related to errors
     /// </summary>
     private static readonly Dictionary<RegistrationError, string> _errorsToDescriptions = new ()
     {
@@ -175,7 +175,7 @@ public static class RegistrationResultExtension
         );
     }
 
-    public static async Task<IReadOnlySet<RegistrationError>> ToRegistrationResult
+    public static async Task<IReadOnlySet<RegistrationError>> ToRegistrationResultAsync
     (
         this HttpResponseMessage response,
         CancellationToken cancellationToken = default
@@ -193,7 +193,7 @@ public static class RegistrationResultExtension
 
             _ => throw new InvalidOperationException
                 (
-                    "Unexpected HTTP status code in registration response: { (int)response.StatusCode } ({ response.StatusCode })"
+                    $"Unexpected HTTP status code in registration response: { (int)response.StatusCode } ({ response.StatusCode })"
                 )
         };
     }
