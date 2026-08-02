@@ -13,6 +13,10 @@ COPY ratel_backend_users/ratel_backend_users_dtos/*.csproj \
 COPY ratel_shared/ratel_shared_observability/*.csproj \
      ratel_shared/ratel_shared_observability/
 
+COPY ratel_shared/ratel_shared_auxiliary/*.csproj \
+     ratel_shared/ratel_shared_auxiliary/
+
+
 RUN dotnet restore ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj
 
 COPY . .

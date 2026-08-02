@@ -16,10 +16,11 @@
 
 using Microsoft.AspNetCore.Identity;
 using ratel_backend_users.DAO.Models.Creatures;
-using ratel_backend_users.Enums.Registration;
 using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
+using ratel_backend_users_dtos.Registration.Enums;
+using ratel_shared_auxiliary.Extensions;
 using ratel_shared_observability.Metrics;
 
 namespace ratel_backend_users.Services.Implementation;
@@ -45,23 +46,34 @@ public class RegistrationService
         return await userManager.FindByNameAsync(login) == null;
     }
 
-    public async Task<Tuple<RegistrationResult, Creature?>> RegisterAsync(string login, string password)
+    public async Task<Tuple<IReadOnlySet<RegistrationError>, Creature?>> RegisterAsync
+    (
+        string login,
+        string password
+    )
     {
         using var _ = new MetricsTimer(RegistrationMetrics.RegistrationDuration);
 
+        var errors = new HashSet<RegistrationError>();
+
         if (string.IsNullOrWhiteSpace(login))
         {
-            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedLoginEmpty, null);
+            errors.AddUnique(RegistrationError.FailedLoginEmpty);
         }
 
         if (string.IsNullOrWhiteSpace(password))
         {
-            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedPasswordEmpty, null);
+            errors.AddUnique(RegistrationError.FailedPasswordEmpty);
         }
 
         if (await userManager.FindByNameAsync(login) != null)
         {
-            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedLoginTaken, null);
+            errors.Add(RegistrationError.FailedLoginTaken);
+        }
+
+        if (errors.Any())
+        {
+            return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, null);
         }
 
         var creatureDbo = new CreatureDbo()
@@ -74,7 +86,12 @@ public class RegistrationService
         if (!result.Succeeded)
         {
             // Mostly probably password is too weak
-            return new Tuple<RegistrationResult, Creature?>(RegistrationResult.FailedPasswordTooWeak, null);
+            errors.AddUnique(RegistrationError.FailedPasswordTooWeak);
+        }
+
+        if (errors.Any())
+        {
+            return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, null);
         }
 
         var creature = new Creature(creatureDbo);
@@ -82,6 +99,11 @@ public class RegistrationService
         // TODO: Add roles
         RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
 
-        return new Tuple<RegistrationResult, Creature?>(RegistrationResult.Created, creature);
+        if (errors.Any())
+        {
+            throw new InvalidOperationException("Bug in a code, successfull registration, but errors aren't empty!");
+        }
+
+        return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, creature);
     }
 }

@@ -1,9 +1,12 @@
 <Solution>
   <Folder Name="/ratel_backend_users/">
     <Project Path="ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj" />
+    <Project Path="ratel_backend_users/ratel_backend_users_client/ratel_backend_users_client.csproj" />
     <Project Path="ratel_backend_users/ratel_backend_users_dtos/ratel_backend_users_dtos.csproj" />
+    <Project Path="ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj" />
   </Folder>
   <Folder Name="/ratel_shared/">
+    <Project Path="ratel_shared/ratel_shared_auxiliary/ratel_shared_auxiliary.csproj" />
     <Project Path="ratel_shared/ratel_shared_observability/ratel_shared_observability.csproj" />
   </Folder>
 </Solution>
