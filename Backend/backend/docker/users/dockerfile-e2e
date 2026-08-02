@@ -13,6 +13,9 @@ COPY ratel_backend_users/ratel_backend_users_client/*.csproj \
 COPY ratel_backend_users/ratel_backend_users_e2e/*.csproj \
      ratel_backend_users/ratel_backend_users_e2e/
 
+COPY ratel_shared/ratel_shared_auxiliary/*.csproj \
+     ratel_shared/ratel_shared_auxiliary/
+
 RUN dotnet restore ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj
 
 # Copy sources

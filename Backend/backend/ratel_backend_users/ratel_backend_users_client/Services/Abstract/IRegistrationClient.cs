@@ -35,6 +35,6 @@ public interface IRegistrationClient
     /// </summary>
     /// <param name="login">Login</param>
     /// <param name="password">Password</param>
-    /// <returns>Registration result</returns>
-    Task<RegistrationError> RegisterAsync(string login, string password);
+    /// <returns>Registration errors or empty set if registration is successful</returns>
+    Task<IReadOnlySet<RegistrationError>> RegisterAsync(string login, string password);
 }

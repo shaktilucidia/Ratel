@@ -19,6 +19,7 @@ using System.Text.Json;
 using ratel_backend_users_client.Services.Abstract;
 using ratel_backend_users_dtos.Registration.DTOs;
 using ratel_backend_users_dtos.Registration.Enums;
+using ratel_backend_users_dtos.Registration.Extensions;
 using ratel_backend_users_dtos.Registration.Requests;
 using ratel_backend_users_dtos.Registration.Responses;
 
@@ -56,24 +57,23 @@ public class RegistrationClient
             .IsAvailable;
     }
 
-    public async Task<RegistrationError> RegisterAsync(string login, string password)
+    public async Task<IReadOnlySet<RegistrationError>> RegisterAsync(string login, string password)
     {
-        throw new NotImplementedException();
-        // var response = await httpClient
-        //     .PostAsJsonAsync
-        //     (
-        //         $"users/registration/register",
-        //         new CreatureRegistrationRequest()
-        //         {
-        //             RegistrationData = new CreatureRegistrationDataDto()
-        //             {
-        //                 Login = login,
-        //                 Password = password
-        //             }
-        //         }
-        //     )
-        //     .ConfigureAwait(false);
+        var response = await httpClient
+            .PostAsJsonAsync
+            (
+                $"users/registration/register",
+                new CreatureRegistrationRequest()
+                {
+                    RegistrationData = new CreatureRegistrationDataDto()
+                    {
+                        Login = login,
+                        Password = password
+                    }
+                }
+            )
+            .ConfigureAwait(false);
 
-        // return response.ToResult();
+        return await response.ToRegistrationResultAsync();
     }
 }
