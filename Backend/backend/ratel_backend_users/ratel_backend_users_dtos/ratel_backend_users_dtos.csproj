@@ -10,4 +10,8 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="../../ratel_shared/ratel_shared_auxiliary/ratel_shared_auxiliary.csproj" />
+    </ItemGroup>
+
 </Project>
