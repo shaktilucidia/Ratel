@@ -13,6 +13,8 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using ratel_backend_users_dtos.Registration.Enums;
 using ratel_backend_users_e2e.Auxilliary;
 using Shouldly;
 
@@ -29,21 +31,15 @@ public class RegistrationTests(ApiFixture fixture) : IClassFixture<ApiFixture>
     [Fact]
     public async Task AvailableLoginMustBeAvailable()
     {
-        #region Arrange
-
-        var availableLogin = $"Available_Login_{ Guid.NewGuid() }";
-
-        #endregion
-
         #region Act
 
-        var isAvailable = await fixture.RegistrationClient.IsLoginAvailableAsync(availableLogin);
+            var isAvailable = await fixture.RegistrationClient.IsLoginAvailableAsync(LoginsHelper.GenerateUniqueLogin());
 
         #endregion
 
         #region Assert
 
-        isAvailable.ShouldBe(true);
+            isAvailable.ShouldBe(true);
 
         #endregion
     }
@@ -56,23 +52,96 @@ public class RegistrationTests(ApiFixture fixture) : IClassFixture<ApiFixture>
     {
         #region Arrange
 
-        var unavailableLogin = $"Unavailable_Login_{ Guid.NewGuid() }";
+            var unavailableLogin = LoginsHelper.GenerateUniqueLogin();
 
-        await fixture.RegistrationClient.RegisterAsync(unavailableLogin, "Password123!");
+            await fixture.RegistrationClient.RegisterAsync(unavailableLogin, PasswordsHelper.GenerateCorrectPassword());
 
         #endregion
 
         #region Act
 
-        var isAvailable = await fixture.RegistrationClient.IsLoginAvailableAsync(unavailableLogin);
+            var isAvailable = await fixture.RegistrationClient.IsLoginAvailableAsync(unavailableLogin);
 
         #endregion
 
         #region Assert
 
-        isAvailable.ShouldBe(false);
+            isAvailable.ShouldBe(false);
 
         #endregion
     }
 
+    /// <summary>
+    /// Empty login must lead to "empty login" validation error
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task EmptyLoginMustProduceValidationError(bool isUseCorrectPassword)
+    {
+        #region Act
+
+            var registrationErrors = await fixture.RegistrationClient.RegisterAsync
+            (
+                string.Empty,
+                PasswordsHelper.GeneratePassword(isUseCorrectPassword)
+            );
+
+        #endregion
+
+        #region Assert
+
+            registrationErrors.ShouldContain(RegistrationError.FailedLoginEmpty);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Empty password must lead to "empty password" validation error
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task EmptyPasswordMustProduceValidationError(bool isUseCorrectLogin)
+    {
+        #region Act
+
+            var registrationErrors = await fixture.RegistrationClient.RegisterAsync
+            (
+                LoginsHelper.GenerateLogin(isUseCorrectLogin), string.Empty
+            );
+
+        #endregion
+
+        #region Assert
+
+            registrationErrors.ShouldContain(RegistrationError.FailedPasswordEmpty);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Weak password must lead to "weak password" validation error
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task WeakPasswordMustProduceValidationError(bool isUseCorrectLogin)
+    {
+        #region Act
+
+            var registrationErrors = await fixture.RegistrationClient.RegisterAsync
+            (
+                LoginsHelper.GenerateLogin(isUseCorrectLogin),
+                PasswordsHelper.GeneratePassword(false)
+            );
+
+        #endregion
+
+        #region Assert
+
+            registrationErrors.ShouldContain(RegistrationError.FailedPasswordTooWeak);
+
+        #endregion
+    }
 }

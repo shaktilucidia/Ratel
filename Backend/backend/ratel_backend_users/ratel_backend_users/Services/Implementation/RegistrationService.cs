@@ -71,11 +71,6 @@ public class RegistrationService
             errors.Add(RegistrationError.FailedLoginTaken);
         }
 
-        if (errors.Any())
-        {
-            return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, null);
-        }
-
         var creatureDbo = new CreatureDbo()
         {
             UserName = login,
