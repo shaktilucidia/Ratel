@@ -7,3 +7,10 @@ metadata:
 
 spec:
   ipFamily: DualStack
+
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        annotations:
+          metallb.io/loadBalancerIPs: "172.18.255.200,fc00:f853:ccd:e793:ffff:ffff:ffff:ff00"

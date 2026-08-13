@@ -32,6 +32,12 @@ spec:
                   name: grafana-secrets
                   key: admin-password
 
+            - name: GF_SERVER_ROOT_URL
+              value: "http://ratel.local:9000/monitoring/grafana/"
+
+            - name: GF_SERVER_SERVE_FROM_SUB_PATH
+              value: "true"
+
           volumeMounts:
             - name: grafana-datasources
               mountPath: /etc/grafana/provisioning/datasources

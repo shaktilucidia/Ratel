@@ -12,8 +12,4 @@ nodes:
         hostPort: 5432
         protocol: TCP
 
-      - containerPort: 30002
-        hostPort: 9001
-        protocol: TCP
-
 - role: worker
