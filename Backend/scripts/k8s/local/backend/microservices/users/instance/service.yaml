@@ -5,12 +5,13 @@ metadata:
   namespace: ratel-backend
 
 spec:
-  type: NodePort
+  type: ClusterIP
 
   selector:
     app: ratel-backend-users
 
   ports:
-    - port: 9000
+    - name: http
+      protocol: TCP
+      port: 9000
       targetPort: 9000
-      nodePort: 30000

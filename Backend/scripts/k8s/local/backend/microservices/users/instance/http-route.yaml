@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: ratel-backend-users
+  namespace: ratel-backend
+
+spec:
+  parentRefs:
+    - name: ratel-gateway
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/users
+
+      backendRefs:
+        - name: ratel-backend-users
+          port: 9000

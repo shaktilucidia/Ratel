@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+
+metadata:
+  name: ratel-gateway
+  namespace: ratel-backend
+
+spec:
+  gatewayClassName: ratel-gateway-class
+
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: ratel-envoy-proxy
+
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 9000
+
+      allowedRoutes:
+        namespaces:
+          from: Same

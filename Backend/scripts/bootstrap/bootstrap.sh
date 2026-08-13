@@ -20,4 +20,9 @@ echo "Stage 3: Monitoring"
 
 ./monitoring.sh
 
+
+echo "Stage 4: Gateway"
+
+./gateway.sh
+
 exit 0
