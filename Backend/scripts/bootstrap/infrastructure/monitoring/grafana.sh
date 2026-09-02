@@ -4,7 +4,7 @@ set -euo pipefail
 echo "Deploying Grafana"
 
 pwd
-pushd ../k8s/local
+pushd ../k8s
 
     kubectl --context "$RATEL_CONTEXT"  apply -f backend/infrastructure/monitoring/grafana
 

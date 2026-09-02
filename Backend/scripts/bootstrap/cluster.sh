@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd ../k8s/local
+cd ../k8s
 
 echo "Stage 0: Deleting old cluster"
 

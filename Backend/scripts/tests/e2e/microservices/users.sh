@@ -27,7 +27,7 @@ kubectl --context "$RATEL_CONTEXT" wait \
 
 echo "Users E2E - Stage 3: Running tests"
 
-kubectl --context "$RATEL_CONTEXT" apply -f ../../k8s/local/backend/microservices/users/tests/e2e
+kubectl --context "$RATEL_CONTEXT" apply -f ../../k8s/backend/microservices/users/tests/e2e
 
 kubectl --context "$RATEL_CONTEXT" wait \
   --for=condition=complete \
