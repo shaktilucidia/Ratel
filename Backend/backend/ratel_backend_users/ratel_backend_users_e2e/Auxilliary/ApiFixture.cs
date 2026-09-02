@@ -18,43 +18,29 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ratel_backend_users_client;
 using ratel_backend_users_client.Services.Abstract;
-using ratel_backend_users_e2e.Models.Settings;
+using ratel_shared_e2e;
+using ratel_shared_e2e.Models.Settings;
 
 namespace ratel_backend_users_e2e.Auxilliary;
 
 /// <summary>
 /// Clients and settings are here
 /// </summary>
-public sealed class ApiFixture : IAsyncLifetime
+public sealed class ApiFixture : ApiFixtureBase
 {
-    /// <summary>
-    /// Services provider for DI
-    /// </summary>
-    private IServiceProvider _servicesProvider { get; set; } = null!;
-
     #region Clients
 
     public IRegistrationClient RegistrationClient => _servicesProvider.GetRequiredService<IRegistrationClient>();
 
     #endregion
 
-    public Task InitializeAsync()
+    protected override void ConfigureServices
+    (
+        IServiceCollection services,
+        IConfiguration configuration,
+        CommonSettings commonSettings
+    )
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
-
-        var services = new ServiceCollection();
-
-        services.Configure<CommonSettings>(configuration.GetSection(nameof(CommonSettings)));
-
-        var commonSettings = configuration
-        .GetSection(nameof(CommonSettings))
-        .Get<CommonSettings>();
-
-        _ = commonSettings ?? throw new ArgumentNullException(nameof(commonSettings), "Common E2E settings aren't specified");
-
         services.AddRatelBackendUsersClients
         (
             options
@@ -69,25 +55,5 @@ public sealed class ApiFixture : IAsyncLifetime
                 options.Timeout = commonSettings.Timeout;
             }
         );
-
-        _servicesProvider = services.BuildServiceProvider();
-
-        return Task.CompletedTask;
-    }
-
-    public async Task DisposeAsync()
-    {
-        if (_servicesProvider is IAsyncDisposable asyncDisposable)
-        {
-            await asyncDisposable.DisposeAsync();
-        }
-        else if (_servicesProvider is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-        else
-        {
-            throw new InvalidOperationException($"Unsupported service provider type: { _servicesProvider.GetType().FullName }");
-        }
     }
 }

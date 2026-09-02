@@ -9,7 +9,6 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
         <PackageReference Include="xunit" Version="2.9.3" />
@@ -21,19 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-        <HintPath>..\..\..\..\..\..\..\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\10.0.9\lib\net10.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="../../ratel_shared/ratel_shared_e2e/ratel_shared_e2e.csproj" />
       <ProjectReference Include="..\ratel_backend_users_client\ratel_backend_users_client.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-</ItemGroup>
 
 </Project>

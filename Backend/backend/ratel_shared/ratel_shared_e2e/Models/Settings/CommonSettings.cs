@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace ratel_backend_users_e2e.Models.Settings;
+namespace ratel_shared_e2e.Models.Settings;
 
 /// <summary>
 /// Common settings for all E2E tests

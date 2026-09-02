@@ -7,6 +7,7 @@
   </Folder>
   <Folder Name="/ratel_shared/">
     <Project Path="ratel_shared/ratel_shared_auxiliary/ratel_shared_auxiliary.csproj" />
+    <Project Path="ratel_shared/ratel_shared_e2e/ratel_shared_e2e.csproj" />
     <Project Path="ratel_shared/ratel_shared_observability/ratel_shared_observability.csproj" />
   </Folder>
 </Solution>
