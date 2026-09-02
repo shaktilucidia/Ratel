@@ -54,7 +54,7 @@ public class RegistrationClient
         response.EnsureSuccessStatusCode();
 
         return JsonSerializer
-            .Deserialize<IsLoginAvailableResponse>(await response.Content.ReadAsStringAsync())
+            .Deserialize<IsLoginAvailableResponse>(await response.Content.ReadAsStringAsync(cancellationToken))
             !.AvailabilityData
             .IsAvailable;
     }
@@ -82,7 +82,7 @@ public class RegistrationClient
             )
             .ConfigureAwait(false);
 
-        // Non-successfull status codes are handled in ToRegistrarionResultAsync()
-        return await response.ToRegistrationResultAsync();
+        // Non-successful status codes are handled in ToRegistrationResultAsync()
+        return await response.ToRegistrationResultAsync(cancellationToken);
     }
 }
