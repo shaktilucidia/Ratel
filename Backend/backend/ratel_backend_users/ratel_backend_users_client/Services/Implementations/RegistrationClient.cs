@@ -30,9 +30,13 @@ public class RegistrationClient
     HttpClient httpClient
 ) : IRegistrationClient
 {
-    public async Task<bool> IsLoginAvailableAsync(string login)
+    public async Task<bool> IsLoginAvailableAsync
+    (
+        string login,
+        CancellationToken cancellationToken
+    )
     {
-        var response = await httpClient
+        using var response = await httpClient
             .PostAsJsonAsync
             (
                 $"users/registration/is_login_available",
@@ -42,14 +46,12 @@ public class RegistrationClient
                     {
                         Login = login
                     }
-                }
+                },
+                cancellationToken
             )
             .ConfigureAwait(false);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException();
-        }
+        response.EnsureSuccessStatusCode();
 
         return JsonSerializer
             .Deserialize<IsLoginAvailableResponse>(await response.Content.ReadAsStringAsync())
@@ -57,9 +59,14 @@ public class RegistrationClient
             .IsAvailable;
     }
 
-    public async Task<IReadOnlySet<RegistrationError>> RegisterAsync(string login, string password)
+    public async Task<IReadOnlySet<RegistrationError>> RegisterAsync
+    (
+        string login,
+        string password,
+        CancellationToken cancellationToken
+    )
     {
-        var response = await httpClient
+        using var response = await httpClient
             .PostAsJsonAsync
             (
                 $"users/registration/register",
@@ -70,10 +77,12 @@ public class RegistrationClient
                         Login = login,
                         Password = password
                     }
-                }
+                },
+                cancellationToken
             )
             .ConfigureAwait(false);
 
+        // Non-successfull status codes are handled in ToRegistrarionResultAsync()
         return await response.ToRegistrationResultAsync();
     }
 }

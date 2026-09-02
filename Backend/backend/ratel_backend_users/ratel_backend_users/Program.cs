@@ -130,9 +130,7 @@ builder.Services.AddControllers();
 
         builder.Services.AddDbContext<MainDbContext>
         (
-            options
-            =>
-            options.UseNpgsql(mainDataSource), ServiceLifetime.Transient
+            options => options.UseNpgsql(mainDataSource)
         );
 
     #endregion

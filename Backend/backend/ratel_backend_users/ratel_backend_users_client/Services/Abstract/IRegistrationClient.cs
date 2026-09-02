@@ -28,7 +28,11 @@ public interface IRegistrationClient
     /// </summary>
     /// <param name="login">Desired login</param>
     /// <returns>True if available</returns>
-    Task<bool> IsLoginAvailableAsync(string login);
+    Task<bool> IsLoginAvailableAsync
+    (
+        string login,
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Register a creature
@@ -36,5 +40,9 @@ public interface IRegistrationClient
     /// <param name="login">Login</param>
     /// <param name="password">Password</param>
     /// <returns>Registration errors or empty set if registration is successful</returns>
-    Task<IReadOnlySet<RegistrationError>> RegisterAsync(string login, string password);
+    Task<IReadOnlySet<RegistrationError>> RegisterAsync
+    (
+        string login, string password,
+        CancellationToken cancellationToken = default
+    );
 }

@@ -86,19 +86,21 @@ public class RegistrationService
 
         if (errors.Any())
         {
+            RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", false));
             return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, null);
         }
 
         var creature = new Creature(creatureDbo);
 
         // TODO: Add roles
-        RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
 
         if (errors.Any())
         {
+            RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", false));
             throw new InvalidOperationException("Bug in a code, successfull registration, but errors aren't empty!");
         }
 
+        RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
         return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, creature);
     }
 }
