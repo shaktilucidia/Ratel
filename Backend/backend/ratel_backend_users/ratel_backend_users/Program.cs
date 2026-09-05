@@ -32,6 +32,8 @@ using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
+using ratel_shared_auxiliary.UoW.Abstract;
+using ratel_shared_auxiliary.UoW.Implementations;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +44,8 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddScoped<IRegistrationService, RegistrationService>();
     builder.Services.AddScoped<IHealthService, HealthService>();
+
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
 
     #endregion
 

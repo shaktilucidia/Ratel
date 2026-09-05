@@ -14,36 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using ratel_backend_users_dtos.Registration.Enums;
-
-namespace ratel_backend_users_client.Services.Abstract;
+namespace ratel_shared_auxiliary.UoW.Abstract;
 
 /// <summary>
-/// Client to work with creatures registration
+/// Use this to implement Unit of Work pattern
 /// </summary>
-public interface IRegistrationClient
+public interface IUnitOfWork
 {
     /// <summary>
-    /// Checks is login available
+    /// Call this to start a transaction
     /// </summary>
-    /// <param name="login">Desired login</param>
-    /// <returns>True if available</returns>
-    Task<bool> IsLoginAvailableAsync
+    Task<IUnitOfWorkTransaction> BeginTransactionAsync
     (
-        string login,
-        CancellationToken cancellationToken = default
-    );
-
-    /// <summary>
-    /// Register a creature
-    /// </summary>
-    /// <param name="login">Login</param>
-    /// <param name="password">Password</param>
-    /// <returns>Registration errors or empty set if registration is successful</returns>
-    Task<IReadOnlySet<RegistrationError>> RegisterAsync
-    (
-        string login,
-        string password,
         CancellationToken cancellationToken = default
     );
 }

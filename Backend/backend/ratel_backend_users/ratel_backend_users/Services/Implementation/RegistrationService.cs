@@ -21,6 +21,7 @@ using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users_dtos.Registration.Enums;
 using ratel_shared_auxiliary.Extensions;
+using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_observability.Metrics;
 
 namespace ratel_backend_users.Services.Implementation;
@@ -28,7 +29,8 @@ namespace ratel_backend_users.Services.Implementation;
 public class RegistrationService
 (
     ILogger<RegistrationService> logger,
-    UserManager<CreatureDbo> userManager
+    UserManager<CreatureDbo> userManager,
+    IUnitOfWork unitOfWork
 ) : IRegistrationService
 {
     public async Task<bool> IsLoginAvailableAsync(string login)
@@ -49,7 +51,8 @@ public class RegistrationService
     public async Task<Tuple<IReadOnlySet<RegistrationError>, Creature?>> RegisterAsync
     (
         string login,
-        string password
+        string password,
+        CancellationToken cancellationToken
     )
     {
         using var _ = new MetricsTimer(RegistrationMetrics.RegistrationDuration);
@@ -70,6 +73,8 @@ public class RegistrationService
         {
             errors.Add(RegistrationError.FailedLoginTaken);
         }
+
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
         var creatureDbo = new CreatureDbo()
         {
@@ -100,6 +105,7 @@ public class RegistrationService
             throw new InvalidOperationException("Bug in a code, successfull registration, but errors aren't empty!");
         }
 
+        await transaction.CommitAsync(cancellationToken);
         RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
         return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, creature);
     }

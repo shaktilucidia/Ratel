@@ -37,5 +37,10 @@ public interface IRegistrationService
     /// <param name="password">Creature's password</param>
     /// <returns>Errors set and creature (if registration was successfull, otherwise null)
     /// Registration is successfull if errors set is empty</returns>
-    Task<Tuple<IReadOnlySet<RegistrationError>, Creature?>> RegisterAsync(string login, string password);
+    Task<Tuple<IReadOnlySet<RegistrationError>, Creature?>> RegisterAsync
+    (
+        string login,
+        string password,
+        CancellationToken cancellationToken = default
+    );
 }
