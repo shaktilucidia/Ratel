@@ -62,14 +62,25 @@ public class RegistrationController
     [AllowAnonymous]
     [Route("register")]
     [HttpPost]
-    public async Task<IActionResult> RegisterAsync([FromBody] CreatureRegistrationRequest request)
+    public async Task<IActionResult> RegisterAsync
+    (
+        [FromBody] CreatureRegistrationRequest request,
+        CancellationToken cancellationToken
+    )
     {
         _ = request ?? throw new ArgumentNullException(nameof(request), "Request must be provided");
 
         return this
             .ToActionResult
             (
-                (await registrationService.RegisterAsync(request.RegistrationData.Login, request.RegistrationData.Password))
+                (
+                    await registrationService.RegisterAsync
+                    (
+                        request.RegistrationData.Login,
+                        request.RegistrationData.Password,
+                        cancellationToken
+                    )
+                )
                 .Item1
             );
     }

@@ -31,7 +31,7 @@ namespace ratel_shared_auxiliary.UoW.Implementations
                                 .Database
                                 .BeginTransactionAsync(cancellationToken);
 
-        return new UnitOfWorkTransaction(transaction);
+            return new UnitOfWorkTransaction(transaction);
         }
     }
 }

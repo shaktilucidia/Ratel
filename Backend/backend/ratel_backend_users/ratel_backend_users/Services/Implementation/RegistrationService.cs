@@ -106,7 +106,9 @@ public class RegistrationService
         }
 
         await transaction.CommitAsync(cancellationToken);
+
         RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
+
         return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, creature);
     }
 }
