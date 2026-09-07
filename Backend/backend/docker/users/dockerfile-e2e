@@ -2,6 +2,7 @@
 
 WORKDIR /source
 
+COPY Directory.Packages.props .
 COPY Ratel.Backend.slnx .
 
 COPY ratel_backend_users/ratel_backend_users_dtos/*.csproj \
