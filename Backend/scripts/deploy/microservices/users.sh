@@ -30,7 +30,7 @@ kubectl --context "$RATEL_CONTEXT" wait \
 
 
 echo "Initializing users and roles..."
-kubectl --context "$RATEL_CONTEXT" delete job ratel-init-backend-userss -n ratel-backend --ignore-not-found
+kubectl --context "$RATEL_CONTEXT" delete job ratel-init-backend-users -n ratel-backend --ignore-not-found
 kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/backend/microservices/users/init
 
 kubectl --context "$RATEL_CONTEXT" wait \

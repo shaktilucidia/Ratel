@@ -360,6 +360,15 @@ if (isApplyMigrations || isInitUsers || isUpdateUsers)
     }
     
     #endregion
+    
+    #region Update users and roles
+
+    if (isUpdateUsers)
+    {
+        throw new NotImplementedException("Not implemented yet");
+    }
+    
+    #endregion
 
     return 0;
 }
