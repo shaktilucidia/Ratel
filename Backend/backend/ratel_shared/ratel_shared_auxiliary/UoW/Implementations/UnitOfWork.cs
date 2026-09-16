@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using ratel_shared_auxiliary.UoW.Abstract;
 
@@ -25,11 +26,15 @@ namespace ratel_shared_auxiliary.UoW.Implementations
     )
     : IUnitOfWork where TDbContext : DbContext
     {
-        public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+        public async Task<IUnitOfWorkTransaction> BeginTransactionAsync
+        (
+            CancellationToken cancellationToken,
+            IsolationLevel isolationLevel
+        )
         {
             var transaction = await dbContext
                                 .Database
-                                .BeginTransactionAsync(cancellationToken);
+                                .BeginTransactionAsync(isolationLevel, cancellationToken);
 
             return new UnitOfWorkTransaction(transaction);
         }

@@ -29,6 +29,7 @@ using OpenTelemetry.Trace;
 using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.Enums;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
@@ -36,7 +37,41 @@ using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_auxiliary.UoW.Implementations;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+#region Detect run mode
+
+    var isApplyMigrations = args.Contains(CommandLine.ApplyMigrationsArgName);
+    var isInitUsers = args.Contains(CommandLine.InitUsersArgName);
+    var isUpdateUsers = args.Contains(CommandLine.UpdateUsersArgName);
+
+    var selectedModesCount =
+        (isApplyMigrations ? 1 : 0)
+        +
+        (isInitUsers ? 1 : 0)
+        +
+        (isUpdateUsers ? 1 : 0);
+
+    if (selectedModesCount > 1)
+    {
+        throw new ArgumentException
+        (
+            "Only one of apply_migrations, init_users, or update_users may be specified"
+        );
+    }
+
+    var cleanedFromModeArgs = args
+        .Where
+        (
+            arg
+            =>
+            arg is not CommandLine.ApplyMigrationsArgName
+            and not CommandLine.InitUsersArgName
+            and not CommandLine.UpdateUsersArgName
+        )
+        .ToArray();
+
+#endregion
+
+var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
 #region DI
 
@@ -46,6 +81,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IHealthService, HealthService>();
 
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
+
+    builder.Services.AddScoped<IUsersAndRolesInitializer, UsersAndRolesInitializer>();
 
     #endregion
 
@@ -297,6 +334,38 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+#region Run selected mode
+
+if (isApplyMigrations || isInitUsers || isUpdateUsers)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<MainDbContext>();
+
+    #region Apply migrations mode
+
+    if (isApplyMigrations)
+    {
+        await db.Database.MigrateAsync();
+    }
+
+    #endregion
+    
+    #region Init users and roles
+
+    if (isInitUsers)
+    {
+        var usersAndRolesInitializer = scope.ServiceProvider.GetRequiredService<IUsersAndRolesInitializer>();
+
+        await usersAndRolesInitializer.InitAsync();
+    }
+    
+    #endregion
+
+    return 0;
+}
+
+#endregion
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -314,19 +383,6 @@ app.MapPrometheusScrapingEndpoint();
 
 app.MapControllers();
 
-#region  Apply migrations mode
-
-if (args.Contains(Commandline.ApplyMigrationsArgName))
-{
-    using var scope = app.Services.CreateScope();
-
-    var db = scope.ServiceProvider.GetRequiredService<MainDbContext>();
-
-    await db.Database.MigrateAsync();
-
-    return;
-}
-
-#endregion
-
 app.Run();
+
+return 0;

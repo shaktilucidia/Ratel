@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Data;
+
 namespace ratel_shared_auxiliary.UoW.Abstract;
 
 /// <summary>
@@ -26,6 +28,7 @@ public interface IUnitOfWork
     /// </summary>
     Task<IUnitOfWorkTransaction> BeginTransactionAsync
     (
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default,
+        IsolationLevel isolationLevel = IsolationLevel.ReadCommitted
     );
 }

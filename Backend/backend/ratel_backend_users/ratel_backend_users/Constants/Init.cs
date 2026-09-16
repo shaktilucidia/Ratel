@@ -14,22 +14,24 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
-
-namespace ratel_backend_users.DAO.Models.Creatures;
+namespace ratel_backend_users.Constants;
 
 /// <summary>
-/// Creature role
+/// Constants, related to microservice init
 /// </summary>
-public class CreatureRoleDbo : IdentityRole<Guid>
+public static class Init
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
-    
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// Use this code for inter-instances users and roles creation lock
+    /// </summary>
+    public const int InitUsersAndRolesTransactionCode = 83259143;
+
+    /// <summary>
+    /// This roles will be created on server init
+    /// </summary>
+    public static readonly IReadOnlyCollection<string> Roles = 
+    [
+        ServerRole.User,
+        ServerRole.Administrator
+    ];
 }

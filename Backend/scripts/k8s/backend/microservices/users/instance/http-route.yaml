@@ -18,3 +18,35 @@ spec:
       backendRefs:
         - name: ratel-backend-users
           port: 9000
+
+    - matches:
+        - path:
+            type: Exact
+            value: /dev/swagger/users
+        - path:
+            type: Exact
+            value: /dev/swagger/users/
+
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /dev/swagger/users/index.html
+            statusCode: 302
+
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev/swagger/users
+
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /swagger
+
+      backendRefs:
+        - name: ratel-backend-users
+          port: 9000

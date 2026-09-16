@@ -14,22 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
-
-namespace ratel_backend_users.DAO.Models.Creatures;
+namespace ratel_backend_users.Services.Abstract;
 
 /// <summary>
-/// Creature role
+/// Use this to initialize system users and roles
 /// </summary>
-public class CreatureRoleDbo : IdentityRole<Guid>
+public interface IUsersAndRolesInitializer
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
-    
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// Init system roles and users
+    /// </summary>
+    Task InitAsync(CancellationToken cancellationToken = default);
 }

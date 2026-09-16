@@ -20,6 +20,7 @@ using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users_dtos.Registration.Enums;
+using ratel_backend_users.Constants;
 using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_observability.Metrics;
@@ -97,12 +98,16 @@ public class RegistrationService
 
         var creature = new Creature(creatureDbo);
 
-        // TODO: Add roles
+        #region Add roles
+        
+        await AddRoleToCreatureAsync(creature.Id, new []{ ServerRole.User });
+        
+        #endregion
 
         if (errors.Any())
         {
             RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", false));
-            throw new InvalidOperationException("Bug in a code, successfull registration, but errors aren't empty!");
+            throw new InvalidOperationException("Bug in a code, successful registration, but errors aren't empty!");
         }
 
         await transaction.CommitAsync(cancellationToken);
@@ -110,5 +115,36 @@ public class RegistrationService
         RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", true));
 
         return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, creature);
+    }
+
+    public async Task AddRoleToCreatureAsync(Guid creatureId, IReadOnlyCollection<string> roles)
+    {
+        var creature = (await userManager.FindByIdAsync(creatureId.ToString()))
+                       ??
+                       throw new ArgumentException($"Creature with ID = { creatureId } was not found", nameof(creatureId));
+
+        var currentRoles = await userManager.GetRolesAsync(creature);
+
+        var rolesToAdd = roles
+            .Except(currentRoles, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!rolesToAdd.Any())
+        {
+            return;
+        }
+
+        var result = await userManager.AddToRolesAsync(creature, rolesToAdd);
+        
+        if (!result.Succeeded)
+        {
+            var errors = string.Join
+            (
+                "; ",
+                result.Errors.Select(e => $"{ e.Code }: { e.Description }")
+            );
+
+            throw new InvalidOperationException($"Failed to assign roles to creature { creature.UserName }: { errors }");
+        }
     }
 }

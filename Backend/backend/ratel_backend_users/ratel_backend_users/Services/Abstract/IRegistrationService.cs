@@ -36,11 +36,18 @@ public interface IRegistrationService
     /// <param name="login">Creature's login</param>
     /// <param name="password">Creature's password</param>
     /// <returns>Errors set and creature (if registration was successfull, otherwise null)
-    /// Registration is successfull if errors set is empty</returns>
+    /// Registration is successful if errors set is empty</returns>
     Task<Tuple<IReadOnlySet<RegistrationError>, Creature?>> RegisterAsync
     (
         string login,
         string password,
         CancellationToken cancellationToken = default
     );
+    
+    /// <summary>
+    /// Add roles to existing creatures
+    /// </summary>
+    /// <param name="creatureId">Creature ID</param>
+    /// <param name="roles">Roles names</param>
+    Task AddRoleToCreatureAsync(Guid creatureId, IReadOnlyCollection<string> roles);
 }

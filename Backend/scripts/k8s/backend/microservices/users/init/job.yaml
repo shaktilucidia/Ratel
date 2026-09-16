@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: ratel-init-backend-users
+  namespace: ratel-backend
+
+
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+      - name: ratel-backend-users
+        image: ratel_backend_users:latest
+        imagePullPolicy: IfNotPresent
+
+        args: ["init_users"]
+
+        envFrom:
+        - secretRef:
+            name: backend-secrets

@@ -22,12 +22,23 @@ echo "Running migrations..."
 kubectl --context "$RATEL_CONTEXT" delete job ratel-migrate-backend-users -n ratel-backend --ignore-not-found
 kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/backend/microservices/users/migrations
 
-
 kubectl --context "$RATEL_CONTEXT" wait \
     --for=condition=complete \
     job/ratel-migrate-backend-users \
     -n ratel-backend \
     --timeout=120s
+
+
+echo "Initializing users and roles..."
+kubectl --context "$RATEL_CONTEXT" delete job ratel-init-backend-userss -n ratel-backend --ignore-not-found
+kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/backend/microservices/users/init
+
+kubectl --context "$RATEL_CONTEXT" wait \
+    --for=condition=complete \
+    job/ratel-init-backend-users \
+    -n ratel-backend \
+    --timeout=120s
+
 
 echo "Restarting deployment..."
 

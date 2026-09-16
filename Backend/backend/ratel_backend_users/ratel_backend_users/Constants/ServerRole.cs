@@ -14,22 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
-
-namespace ratel_backend_users.DAO.Models.Creatures;
+namespace ratel_backend_users.Constants;
 
 /// <summary>
-/// Creature role
+/// Server roles (don't mistake with chats roles)
 /// </summary>
-public class CreatureRoleDbo : IdentityRole<Guid>
+public static class ServerRole
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
-    
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// User role
+    /// </summary>
+    public static string User = "User";
+
+    /// <summary>
+    /// Administrator role
+    /// </summary>
+    public static string Administrator = "Administrator";
 }
