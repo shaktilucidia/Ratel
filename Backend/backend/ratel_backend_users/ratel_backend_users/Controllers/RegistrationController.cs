@@ -27,7 +27,7 @@ namespace ratel_backend_users.Controllers;
 /// <summary>
 /// Controller, related to creatures registration
 /// </summary>
-[Route("api/creatures/registration")]
+[Route("registration")]
 [ApiController]
 public class RegistrationController
 (

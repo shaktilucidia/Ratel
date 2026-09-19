@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace ratel_backend_users_dtos.Roles.DTOs;
@@ -28,5 +29,6 @@ public class GetRolesForCreaturesRequestDto
     /// </summary>
     [JsonPropertyOrder(0)]
     [JsonPropertyName("creatures_ids")]
+    [property: MinLength(1)]
     public required IReadOnlyCollection<Guid> CreaturesIds { get; set; }
 }

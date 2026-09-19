@@ -94,7 +94,7 @@ public class RegistrationService
             errors.AddUnique(RegistrationError.FailedPasswordTooWeak);
         }
 
-        if (errors.Any())
+        if (errors.Count > 0)
         {
             RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", false));
             return new Tuple<IReadOnlySet<RegistrationError>, Creature?>(errors, null);
@@ -104,11 +104,11 @@ public class RegistrationService
 
         #region Add roles
         
-        await AddRoleToCreatureAsync(creature.Id, new []{ ServerRole.User });
+            await AddRoleToCreatureAsync(creature.Id, new []{ ServerRole.User });
         
         #endregion
 
-        if (errors.Any())
+        if (errors.Count > 0)
         {
             RegistrationMetrics.RegistrationAttemptsCount.Add(1, new KeyValuePair<string, object?>("is_successful", false));
             throw new InvalidOperationException("Bug in a code, successful registration, but errors aren't empty!");
@@ -133,7 +133,7 @@ public class RegistrationService
             .Except(currentRoles, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        if (!rolesToAdd.Any())
+        if (rolesToAdd.Count is 0)
         {
             return;
         }

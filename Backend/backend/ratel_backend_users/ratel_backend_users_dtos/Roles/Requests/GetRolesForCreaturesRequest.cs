@@ -23,7 +23,7 @@ namespace ratel_backend_users_dtos.Roles.Requests;
 /// <summary>
 /// Request to get roles, assigned to creatures
 /// </summary>
-public class GerRolesForCreaturesRequest
+public class GetRolesForCreaturesRequest
 {
     /// <summary>
     /// Get roles request data

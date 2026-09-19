@@ -21,9 +21,9 @@ using ratel_backend_users.Services.Abstract;
 namespace ratel_backend_users.Controllers;
 
 /// <summary>
-/// Healthcheck controller (for k8s)
+/// Health check controller (for k8s)
 /// </summary>
-[Route("api/users/health")]
+[Route("health")]
 [ApiController]
 public class HealthController
 (

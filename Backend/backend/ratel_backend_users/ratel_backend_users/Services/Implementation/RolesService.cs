@@ -30,6 +30,13 @@ public class RolesService
         CancellationToken cancellationToken
     )
     {
+        ArgumentNullException.ThrowIfNull(creaturesIds);
+        
+        if (creaturesIds.Count is 0)
+        {
+            throw new ArgumentException("Don't call this method without providing non-empty IDs list", nameof(creaturesIds));
+        }
+        
         return await rolesDao.GetRolesNamesForCreaturesAsync(creaturesIds, cancellationToken);
     }
 }

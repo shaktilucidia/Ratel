@@ -31,7 +31,9 @@ public class RolesDao
         CancellationToken cancellationToken = default
     )
     {
-        if (!creaturesIds.Any())
+        ArgumentNullException.ThrowIfNull(creaturesIds);
+        
+        if (creaturesIds.Count is 0)
         {
             throw new ArgumentException("Don't call this method without providing non-empty IDs list", nameof(creaturesIds));
         }

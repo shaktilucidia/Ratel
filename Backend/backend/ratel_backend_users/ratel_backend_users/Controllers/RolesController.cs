@@ -27,7 +27,7 @@ namespace ratel_backend_users.Controllers;
 /// <summary>
 /// Controller, related to roles
 /// </summary>
-[Route("api/creatures/roles")]
+[Route("roles")]
 [ApiController]
 public class RolesController
 (
@@ -42,7 +42,7 @@ public class RolesController
     [HttpPost]
     public async Task<ActionResult<GetRolesForCreaturesResponse>> GetRolesForCreaturesAsync
     (
-        [FromBody] GerRolesForCreaturesRequest request,
+        [FromBody] GetRolesForCreaturesRequest request,
         CancellationToken cancellationToken
     )
     {

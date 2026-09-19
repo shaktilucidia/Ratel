@@ -397,7 +397,9 @@ app.UseResponseCompression();
 
 app.MapPrometheusScrapingEndpoint();
 
-app.MapControllers();
+app
+    .MapGroup("/api/creatures")
+    .MapControllers();
 
 app.Run();
 
