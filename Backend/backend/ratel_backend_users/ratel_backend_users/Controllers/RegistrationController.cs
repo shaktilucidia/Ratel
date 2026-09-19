@@ -25,9 +25,9 @@ using ratel_backend_users_dtos.Registration.Extensions;
 namespace ratel_backend_users.Controllers;
 
 /// <summary>
-/// Controller, related to users registration
+/// Controller, related to creatures registration
 /// </summary>
-[Route("api/users/registration")]
+[Route("api/creatures/registration")]
 [ApiController]
 public class RegistrationController
 (
@@ -40,7 +40,11 @@ public class RegistrationController
     [AllowAnonymous]
     [Route("is_login_available")]
     [HttpPost]
-    public async Task<ActionResult<IsLoginAvailableResponse>> IsLoginAvailableAsync([FromBody] IsLoginAvailableRequest request)
+    public async Task<ActionResult<IsLoginAvailableResponse>> IsLoginAvailableAsync
+    (
+        [FromBody] IsLoginAvailableRequest request,
+        CancellationToken cancellationToken
+    )
     {
         _ = request ?? throw new ArgumentNullException(nameof(request), "Request must be provided");
 

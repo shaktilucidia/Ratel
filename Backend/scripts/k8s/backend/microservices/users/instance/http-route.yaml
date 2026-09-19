@@ -13,7 +13,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/users
+            value: /api/creatures
 
       backendRefs:
         - name: ratel-backend-users
@@ -22,23 +22,23 @@ spec:
     - matches:
         - path:
             type: Exact
-            value: /dev/swagger/users
+            value: /dev/swagger/creatures
         - path:
             type: Exact
-            value: /dev/swagger/users/
+            value: /dev/swagger/creatures/
 
       filters:
         - type: RequestRedirect
           requestRedirect:
             path:
               type: ReplaceFullPath
-              replaceFullPath: /dev/swagger/users/index.html
+              replaceFullPath: /dev/swagger/creatures/index.html
             statusCode: 302
 
     - matches:
         - path:
             type: PathPrefix
-            value: /dev/swagger/users
+            value: /dev/swagger/creatures
 
       filters:
         - type: URLRewrite

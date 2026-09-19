@@ -28,7 +28,11 @@ public interface IRegistrationService
     /// Checks if login available or not
     /// </summary>
     /// <returns>True if login is available</returns>
-    Task<bool> IsLoginAvailableAsync(string login);
+    Task<bool> IsLoginAvailableAsync
+    (
+        string login,
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Register creature

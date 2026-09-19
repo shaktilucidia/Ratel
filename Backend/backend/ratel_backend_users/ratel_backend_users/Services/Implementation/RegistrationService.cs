@@ -34,7 +34,11 @@ public class RegistrationService
     IUnitOfWork unitOfWork
 ) : IRegistrationService
 {
-    public async Task<bool> IsLoginAvailableAsync(string login)
+    public async Task<bool> IsLoginAvailableAsync
+    (
+        string login,
+        CancellationToken cancellationToken
+    )
     {
         _ = login ?? throw new ArgumentNullException(nameof(login), "Login must be specified, at least empty string.");
 

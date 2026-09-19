@@ -39,7 +39,7 @@ public class RegistrationClient
         using var response = await httpClient
             .PostAsJsonAsync
             (
-                $"users/registration/is_login_available",
+                $"creatures/registration/is_login_available",
                 new IsLoginAvailableRequest()
                 {
                     LoginData = new IsLoginAvailableRequestDto()
@@ -69,7 +69,7 @@ public class RegistrationClient
         using var response = await httpClient
             .PostAsJsonAsync
             (
-                $"users/registration/register",
+                $"creatures/registration/register",
                 new CreatureRegistrationRequest()
                 {
                     RegistrationData = new CreatureRegistrationDataDto()

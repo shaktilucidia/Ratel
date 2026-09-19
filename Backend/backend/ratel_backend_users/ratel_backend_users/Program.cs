@@ -29,6 +29,8 @@ using OpenTelemetry.Trace;
 using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.DAO.Services.Abstract;
+using ratel_backend_users.DAO.Services.Implementations;
 using ratel_backend_users.Enums;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
@@ -77,12 +79,17 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
     #region Scoped
 
+    #region DAOs
+
+        builder.Services.AddScoped<IRolesDao, RolesDao>();
+    
+    #endregion
+    
     builder.Services.AddScoped<IRegistrationService, RegistrationService>();
     builder.Services.AddScoped<IHealthService, HealthService>();
-
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
-
     builder.Services.AddScoped<IUsersAndRolesInitializer, UsersAndRolesInitializer>();
+    builder.Services.AddScoped<IRolesService, RolesService>();
 
     #endregion
 
