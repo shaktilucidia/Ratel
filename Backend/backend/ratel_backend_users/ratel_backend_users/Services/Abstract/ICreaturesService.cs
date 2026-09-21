@@ -23,7 +23,6 @@ public interface ICreaturesService
 {
     /// <summary>
     /// Get creatures IDs by logins. Empty logins not allowed and will lead to exception
-    /// Duplicated logins will be distincted
     /// </summary>
     /// <param name="logins">Logins</param>
     /// <returns>Logins to IDs dictionary. ID will be null for unknown logins</returns>
