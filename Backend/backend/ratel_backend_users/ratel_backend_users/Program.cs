@@ -90,6 +90,7 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
     builder.Services.AddScoped<IUsersAndRolesInitializer, UsersAndRolesInitializer>();
     builder.Services.AddScoped<IRolesService, RolesService>();
+    builder.Services.AddScoped<ICreaturesService, CreaturesService>();
 
     #endregion
 
@@ -385,7 +386,35 @@ if (isApplyMigrations || isInitUsers || isUpdateUsers)
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    //app.UseSwagger();
+    
+    app.UseSwagger
+    (
+        o =>
+        {
+            o
+                .PreSerializeFilters
+                .Add
+                (
+                    (document, _) =>
+                    {
+                        var paths = new OpenApiPaths();
+
+                        foreach (var path in document.Paths)
+                        {
+                            paths.Add
+                            (
+                                $"{ Microservice.UrlPrefix }{ path.Key }",
+                                path.Value
+                            );
+                        }
+
+                        document.Paths = paths;
+                    }
+                );
+        }
+    );
+    
     app.UseSwaggerUI();
 }
 
@@ -398,7 +427,7 @@ app.UseResponseCompression();
 app.MapPrometheusScrapingEndpoint();
 
 app
-    .MapGroup("/api/creatures")
+    .MapGroup(Microservice.UrlPrefix)
     .MapControllers();
 
 app.Run();

@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using ratel_backend_users_dtos.Registration.Requests;
 using ratel_backend_users_dtos.Roles.DTOs;
 using ratel_backend_users_dtos.Roles.Requests;
 using ratel_backend_users_dtos.Roles.Responses;
@@ -25,44 +25,44 @@ using ratel_backend_users.Services.Abstract;
 namespace ratel_backend_users.Controllers;
 
 /// <summary>
-/// Controller, related to roles
+/// Controller, related to creatures
 /// </summary>
-[Route("roles")]
+[Route("creatures")]
 [ApiController]
-public class RolesController
+public class CreaturesController
 (
-    IRolesService rolesService
+    ICreaturesService creaturesService
 ) : ControllerBase
 {
     /// <summary>
-    /// Get roles, assigned to creatures
+    /// Get creatures IDs
     /// </summary>
     [AllowAnonymous]
-    [Route("get_for_creatures")]
+    [Route("get_ids_by_logins")]
     [HttpPost]
-    public async Task<ActionResult<GetRolesForCreaturesResponse>> GetRolesForCreaturesAsync
+    public async Task<ActionResult<GetCreaturesIdsByLoginsResponse>> GetIdsByLoginsAsync
     (
-        [FromBody] GetRolesForCreaturesRequest request,
+        [FromBody] GetCreaturesIdsByLoginsRequest request,
         CancellationToken cancellationToken
     )
     {
         return Ok
         (
-            new GetRolesForCreaturesResponse()
+            new GetCreaturesIdsByLoginsResponse()
             {
-                RolesForCreature = (await rolesService.GetRolesNamesForCreaturesAsync
+                CreaturesIds = (await creaturesService.GetIdsByLoginsAsync
                 (
-                    request.RequestData.CreaturesIds,
+                    request.Logins,
                     cancellationToken
                 ))
                 .Select
                 (
                     kvp
                     =>
-                    new RolesForCreatureDto()
+                    new CreatureIdDto()
                     {
-                        CreatureId = kvp.Key,
-                        RolesNames = kvp.Value
+                        Login = kvp.Key,
+                        Id = kvp.Value
                     }
                 )
                 .ToList()
