@@ -14,20 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace ratel_backend_users.Constants;
+namespace ratel_backend_users_client.Services.Abstract;
 
 /// <summary>
-/// Server roles (don't mistake with chats roles)
+/// Client to work with creatures roles
 /// </summary>
-public static class ServerRole
+public interface IRolesClient
 {
     /// <summary>
-    /// User role
+    /// Get creatures roles by creatures IDs 
     /// </summary>
-    public static string User = "User";
-
-    /// <summary>
-    /// Administrator role
-    /// </summary>
-    public static string Administrator = "Administrator";
+    /// <param name="ids">Creatures IDs</param>
+    /// <returns>Creature ID -> roles dictionary</returns>
+    Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<string>>> GetRolesByCreaturesIdsAsync
+    (
+        IReadOnlyCollection<Guid> ids,
+        CancellationToken cancellationToken = default
+    );
 }

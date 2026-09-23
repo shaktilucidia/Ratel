@@ -57,6 +57,11 @@ public static class DependencyInjection
             client => SetupHttpClient(client, clientsOptions)
         );
         
+        services.AddHttpClient<IRolesClient, RolesClient>
+        (
+            client => SetupHttpClient(client, clientsOptions)
+        );
+        
         #endregion
 
         return services;

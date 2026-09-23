@@ -32,6 +32,7 @@ public sealed class ApiFixture : ApiFixtureBase
 
     public IRegistrationClient RegistrationClient => _servicesProvider.GetRequiredService<IRegistrationClient>();
     public ICreaturesClient CreaturesClient => _servicesProvider.GetRequiredService<ICreaturesClient>();
+    public IRolesClient RolesClient => _servicesProvider.GetRequiredService<IRolesClient>();
 
     #endregion
 

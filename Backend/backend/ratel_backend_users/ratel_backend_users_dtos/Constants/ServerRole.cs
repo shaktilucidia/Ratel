@@ -14,26 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using ratel_backend_users_dtos.Constants;
-
-namespace ratel_backend_users.Constants;
+namespace ratel_backend_users_dtos.Constants;
 
 /// <summary>
-/// Constants, related to microservice init
+/// Server roles (don't mistake with chats roles)
 /// </summary>
-public static class Init
+public static class ServerRole
 {
     /// <summary>
-    /// Use this code for inter-instances users and roles creation lock
+    /// User role
     /// </summary>
-    public const int InitUsersAndRolesTransactionCode = 83259143;
+    public static string User = "User";
 
     /// <summary>
-    /// This roles will be created on server init
+    /// Administrator role
     /// </summary>
-    public static readonly IReadOnlyCollection<string> Roles = 
-    [
-        ServerRole.User,
-        ServerRole.Administrator
-    ];
+    public static string Administrator = "Administrator";
 }
