@@ -35,34 +35,75 @@ public class CreaturesTests
     {
         #region Arrange
 
-        var creatureLogin = LoginsHelper.GenerateLogin();
+            var creatureLogin = LoginsHelper.GenerateLogin();
         
         #endregion
         
         #region Act
 
-        var registrationErrors = await fixture.RegistrationClient.RegisterAsync
-        (
-            creatureLogin, PasswordsHelper.GeneratePassword()
-        );
+            await fixture.RegistrationClient.RegisterAsync
+            (
+                creatureLogin, PasswordsHelper.GeneratePassword()
+            );
 
-        var loginsToIds = await fixture.CreaturesClient.GetIdsByLoginsAsync
-        (
-            [
-                creatureLogin
-            ]
-        );
+            var loginsToIds = await fixture.CreaturesClient.GetIdsByLoginsAsync
+            (
+                [
+                    creatureLogin
+                ]
+            );
 
         #endregion
 
         #region Assert
-
-        registrationErrors.ShouldBeEmpty();
         
-        loginsToIds.ShouldNotBeEmpty();
-        loginsToIds.Count.ShouldBe(1);
-        loginsToIds.ShouldContainKey(creatureLogin);
-        loginsToIds[creatureLogin].ShouldNotBeNull();
+            loginsToIds.ShouldNotBeEmpty();
+            loginsToIds.Count.ShouldBe(1);
+            loginsToIds.ShouldContainKey(creatureLogin);
+            loginsToIds[creatureLogin].ShouldNotBeNull();
+
+        #endregion
+    }
+    
+    /// <summary>
+    /// Unknown creatures have null ID
+    /// </summary>
+    [Fact]
+    public async Task UnknownCreaturesMustHaveNullId()
+    {
+        #region Arrange
+
+            var knownCreatureLogin = LoginsHelper.GenerateLogin();
+            var unknownCreatureLogin = "UnknownYiffer";
+        
+        #endregion
+        
+        #region Act
+
+            await fixture.RegistrationClient.RegisterAsync
+            (
+                knownCreatureLogin, PasswordsHelper.GeneratePassword()
+            );
+
+            var loginsToIds = await fixture.CreaturesClient.GetIdsByLoginsAsync
+            (
+                [
+                    knownCreatureLogin, unknownCreatureLogin
+                ]
+            );
+
+        #endregion
+
+        #region Assert
+        
+            loginsToIds.ShouldNotBeEmpty();
+            loginsToIds.Count.ShouldBe(2);
+            
+            loginsToIds.ShouldContainKey(knownCreatureLogin);
+            loginsToIds[knownCreatureLogin].ShouldNotBeNull();
+            
+            loginsToIds.ShouldContainKey(unknownCreatureLogin);
+            loginsToIds[unknownCreatureLogin].ShouldBeNull();
 
         #endregion
     }

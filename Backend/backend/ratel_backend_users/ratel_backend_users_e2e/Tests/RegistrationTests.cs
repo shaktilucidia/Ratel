@@ -147,4 +147,26 @@ public class RegistrationTests
 
         #endregion
     }
+    
+    /// <summary>
+    /// Registration must work
+    /// </summary>
+    [Fact]
+    public async Task RegistrationMustBeSuccessful()
+    {
+        #region Act
+
+            var registrationErrors = await fixture.RegistrationClient.RegisterAsync
+            (
+                LoginsHelper.GenerateLogin(), PasswordsHelper.GeneratePassword()
+            );
+
+        #endregion
+
+        #region Assert
+
+            registrationErrors.ShouldBeEmpty();
+
+        #endregion
+    }
 }

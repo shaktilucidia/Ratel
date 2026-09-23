@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "$(dirname "$0")/config_env.sh" "ratel-e2e"
 
-./bootstrap.sh "ratel-e2e"
+./bootstrap.sh --no-monitoring "ratel-e2e"
 
 pushd tests/e2e
 
