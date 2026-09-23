@@ -23,7 +23,10 @@ namespace ratel_backend_users_e2e.Tests;
 /// <summary>
 /// Tests, related to registration
 /// </summary>
-public class RegistrationTests(ApiFixture fixture) : IClassFixture<ApiFixture>
+public class RegistrationTests
+(
+    ApiFixture fixture
+) : IClassFixture<ApiFixture>
 {
     /// <summary>
     /// Available login must be recognized as available

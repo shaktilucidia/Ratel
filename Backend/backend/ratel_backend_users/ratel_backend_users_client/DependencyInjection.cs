@@ -49,16 +49,26 @@ public static class DependencyInjection
 
         services.AddHttpClient<IRegistrationClient, RegistrationClient>
         (
-            client
-            =>
-            {
-                client.BaseAddress = new Uri(clientsOptions.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(clientsOptions.Timeout);
-            }
+            client => SetupHttpClient(client, clientsOptions)
+        );
+        
+        services.AddHttpClient<ICreaturesClient, CreaturesClient>
+        (
+            client => SetupHttpClient(client, clientsOptions)
         );
         
         #endregion
 
         return services;
+    }
+
+    private static void SetupHttpClient
+    (
+        HttpClient client,
+        ClientsOptions clientsOptions
+    )
+    {
+        client.BaseAddress = new Uri(clientsOptions.BaseUrl);
+        client.Timeout = TimeSpan.FromSeconds(clientsOptions.Timeout);
     }
 }
