@@ -2,6 +2,7 @@
 set -euo pipefail
 
 echo "Microservices - Users"
-./microservices/users.sh
+
+./microservices/users.sh "$@"
 
 exit 0

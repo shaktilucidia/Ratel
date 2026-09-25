@@ -2,11 +2,17 @@
 set -euo pipefail
 
 with_monitoring=true
+with_gateway=true
+gateway_args=()
 
 for arg in "$@"; do
     case "$arg" in
         --no-monitoring)
             with_monitoring=false
+            ;;
+        --no-gateway)
+            with_gateway=false
+            gateway_args+=("$arg")
             ;;
         *)
             echo "Unknown argument: $arg" >&2
@@ -28,7 +34,7 @@ popd
 
 echo "Stage 2: Cluster"
 
-./cluster.sh
+./cluster.sh "${gateway_args[@]}"
 
 
 echo "Stage 3: Secrets"
@@ -44,7 +50,7 @@ echo "Stage 4: Databases"
 echo "Stage 5: Monitoring"
 
 if [[ "$with_monitoring" == true ]]; then
-    ./monitoring.sh
+    ./monitoring.sh "${gateway_args[@]}"
 else
     echo "Skipped"
 fi
@@ -52,6 +58,12 @@ fi
 
 echo "Stage 6: Gateway"
 
-./gateway.sh
+echo "Stage 6: Gateway"
+
+if [[ "$with_gateway" == true ]]; then
+    ./gateway.sh
+else
+    echo "Skipped"
+fi
 
 exit 0

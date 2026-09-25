@@ -6,7 +6,14 @@ echo "Deploying Grafana"
 pwd
 pushd ../k8s
 
-    kubectl --context "$RATEL_CONTEXT"  apply -f backend/infrastructure/monitoring/grafana
+for manifest in backend/infrastructure/monitoring/grafana/*.yaml; do
+    if [[ "$with_gateway" == false \
+        && "${manifest##*/}" == "http-route.yaml" ]]; then
+        continue
+    fi
+
+    kubectl --context "$RATEL_CONTEXT" apply -f "$manifest"
+done
 
 popd
 

@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+with_gateway=true
+
+for arg in "$@"; do
+    case "$arg" in
+        --no-gateway)
+            with_gateway=false
+            ;;
+        *)
+            echo "Unknown argument: $arg" >&2
+            exit 1
+            ;;
+    esac
+done
+
 echo "Building..."
 
 pushd ../../backend
@@ -42,7 +56,14 @@ kubectl --context "$RATEL_CONTEXT" wait \
 
 echo "Restarting deployment..."
 
-kubectl --context "$RATEL_CONTEXT" apply -f ../k8s/backend/microservices/users/instance
+kubectl --context "$RATEL_CONTEXT" apply \
+    -f ../k8s/backend/microservices/users/instance/deployment.yaml \
+    -f ../k8s/backend/microservices/users/instance/service.yaml
+
+if [[ "$with_gateway" == true ]]; then
+    kubectl --context "$RATEL_CONTEXT" apply \
+        -f ../k8s/backend/microservices/users/instance/http-route.yaml
+fi
 
 kubectl --context "$RATEL_CONTEXT" rollout restart deployment ratel-backend-users -n ratel-backend
 kubectl --context "$RATEL_CONTEXT" rollout status deployment ratel-backend-users -n ratel-backend

@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+with_gateway=true
+
+for arg in "$@"; do
+    case "$arg" in
+        --no-gateway)
+            with_gateway=false
+            ;;
+        *)
+            echo "Unknown argument: $arg" >&2
+            exit 1
+            ;;
+    esac
+done
+
 cd ../k8s
 
 echo "Stage 0: Deleting old cluster"
@@ -42,33 +56,39 @@ kubectl --context "$RATEL_CONTEXT" apply -f namespace-backend.yaml
 kubectl --context "$RATEL_CONTEXT" apply -f namespace-monitoring.yaml
 
 
-echo "Stage 3: Installing MetalLB"
+if [[ "$with_gateway" == true ]]; then
+    echo "Stage 3: Installing MetalLB"
 
-kubectl --context "$RATEL_CONTEXT" apply -f third-party/metallb
+    kubectl --context "$RATEL_CONTEXT" apply -f third-party/metallb
 
-kubectl --context "$RATEL_CONTEXT" wait \
-  --for=condition=Available \
-  deployment/controller \
-  -n metallb-system \
-  --timeout=300s
+    kubectl --context "$RATEL_CONTEXT" wait \
+        --for=condition=Available \
+        deployment/controller \
+        -n metallb-system \
+        --timeout=300s
 
-kubectl --context "$RATEL_CONTEXT" rollout status \
-  daemonset/speaker \
-  -n metallb-system \
-  --timeout=300s
+    kubectl --context "$RATEL_CONTEXT" rollout status \
+        daemonset/speaker \
+        -n metallb-system \
+        --timeout=300s
 
-kubectl --context "$RATEL_CONTEXT" apply \
-  -f backend/infrastructure/metallb
+    kubectl --context "$RATEL_CONTEXT" apply \
+        -f backend/infrastructure/metallb
 
 
-echo "Stage 4: Installing Envoy"
+    echo "Stage 4: Installing Envoy"
 
-kubectl --context "$RATEL_CONTEXT" apply --server-side -f third-party/envoy
+    kubectl --context "$RATEL_CONTEXT" apply \
+        --server-side \
+        -f third-party/envoy
 
-kubectl --context "$RATEL_CONTEXT" rollout status \
-  deployment/envoy-gateway \
-  -n envoy-gateway-system \
-  --timeout=300s
+    kubectl --context "$RATEL_CONTEXT" rollout status \
+        deployment/envoy-gateway \
+        -n envoy-gateway-system \
+        --timeout=300s
+else
+    echo "Skipping MetalLB and Envoy installation"
+fi
 
 
 exit 0

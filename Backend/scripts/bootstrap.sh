@@ -3,11 +3,16 @@ set -euo pipefail
 
 cluster="ratel-dev"
 bootstrap_args=()
+deploy_args=()
 
 for arg in "$@"; do
     case "$arg" in
         --no-monitoring)
             bootstrap_args+=("$arg")
+            ;;
+        --no-gateway)
+            bootstrap_args+=("$arg")
+            deploy_args+=("$arg")
             ;;
         -*)
             echo "Unknown option: $arg" >&2
@@ -26,7 +31,7 @@ pushd bootstrap
 popd
 
 pushd deploy
-    ./deploy.sh
+    ./deploy.sh "${deploy_args[@]}"
 popd
 
 exit 0
