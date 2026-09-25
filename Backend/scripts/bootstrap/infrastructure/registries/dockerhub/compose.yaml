@@ -4,9 +4,9 @@ services:
     container_name: ratel-dockerhub-cache
     restart: unless-stopped
 
-    ports:
-      - "127.0.0.1:5001:5000"
-      - "[::1]:5001:5000"
+#    ports:
+#      - "127.0.0.1:5001:5000"
+#      - "[::1]:5001:5000"
 
     environment:
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry

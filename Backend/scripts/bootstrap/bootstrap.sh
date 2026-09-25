@@ -19,10 +19,10 @@ echo "Stage 0: Kind network"
 ./network.sh
 
 
-echo "Stage 1: Registry"
+echo "Stage 1: Registries"
 
-pushd infrastructure/registry
-    ./registry.sh
+pushd infrastructure/registries
+    ./registries.sh
 popd
 
 

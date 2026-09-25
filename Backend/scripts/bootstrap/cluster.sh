@@ -13,7 +13,7 @@ echo "Stage 1: Creating cluster"
 kind create cluster --config "$RATEL_CONTEXT.yaml"
 
 
-echo "Stage 2: Setting up nodes to use registry"
+echo "Stage 2: Setting up nodes to use registries"
 
 for node in $(kind get nodes --name "$RATEL_CLUSTER"); do
   docker exec "$node" mkdir -p /etc/containerd/certs.d/docker.io
@@ -22,6 +22,15 @@ for node in $(kind get nodes --name "$RATEL_CLUSTER"); do
 server = "https://registry-1.docker.io"
 
 [host."http://ratel-dockerhub-cache:5000"]
+  capabilities = ["pull", "resolve"]
+EOF
+
+  docker exec "$node" mkdir -p /etc/containerd/certs.d/quay.io
+
+  docker exec -i "$node" cp /dev/stdin /etc/containerd/certs.d/quay.io/hosts.toml <<'EOF'
+server = "https://quay.io"
+
+[host."http://ratel-quay-cache:5000"]
   capabilities = ["pull", "resolve"]
 EOF
 done
