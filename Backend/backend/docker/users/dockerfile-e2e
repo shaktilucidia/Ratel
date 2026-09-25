@@ -26,9 +26,16 @@ RUN dotnet restore ratel_backend_users/ratel_backend_users_e2e/ratel_backend_use
 # Copy sources
 COPY . .
 
-# Run rests
+# Build tests
+RUN dotnet build \
+    ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj \
+    --configuration Release \
+    --no-restore
+
+# Run compiled tests
 ENTRYPOINT ["dotnet", "test", \
     "ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj", \
     "--configuration", "Release", \
+    "--no-build", \
     "--no-restore", \
     "--logger", "console;verbosity=detailed"]

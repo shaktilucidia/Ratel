@@ -18,12 +18,14 @@ COPY ratel_shared/ratel_shared_observability/*.csproj \
 COPY ratel_shared/ratel_shared_auxiliary/*.csproj \
      ratel_shared/ratel_shared_auxiliary/
 
-
-RUN dotnet restore ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj
+RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locked \
+    dotnet restore \
+    ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj
 
 COPY . .
 
-RUN dotnet publish \
+RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locked \
+    dotnet publish \
     ratel_backend_users/ratel_backend_users/ratel_backend_users.csproj \
     -c Release \
     -o /app \
