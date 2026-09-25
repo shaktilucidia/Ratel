@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0
+﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS restore
 
 WORKDIR /source
 
@@ -21,7 +21,18 @@ COPY ratel_shared/ratel_shared_auxiliary/*.csproj \
 COPY ratel_shared/ratel_shared_e2e/*.csproj \
      ratel_shared/ratel_shared_e2e/
 
-RUN dotnet restore ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj
+RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locked \
+    dotnet restore \
+        ratel_backend_users/ratel_backend_users_e2e/ratel_backend_users_e2e.csproj \
+    && cp -a /root/.nuget/packages /nuget-packages
+
+# Copying cache
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS tests
+
+WORKDIR /source
+
+COPY --from=restore /source/ /source/
+COPY --from=restore /nuget-packages/ /root/.nuget/packages/
 
 # Copy sources
 COPY . .
