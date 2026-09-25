@@ -1,0 +1,31 @@
+services:
+  ratel-dockerhub-cache:
+    image: registry:3
+    container_name: ratel-dockerhub-cache
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:5001:5000"
+      - "[::1]:5001:5000"
+
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
+      REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
+      REGISTRY_PROXY_TTL: "0"
+      OTEL_TRACES_EXPORTER: none
+
+    volumes:
+      - ratel-dockerhub-cache-data:/var/lib/registry
+
+    networks:
+      kind:
+        aliases:
+          - ratel-dockerhub-cache
+
+volumes:
+  ratel-dockerhub-cache-data:
+
+networks:
+  kind:
+    external: true
+    name: kind

@@ -15,22 +15,33 @@ for arg in "$@"; do
     esac
 done
 
-echo "Stage 0: Cluster"
+echo "Stage 0: Kind network"
+./network.sh
+
+
+echo "Stage 1: Registry"
+
+pushd infrastructure/registry
+    ./registry.sh
+popd
+
+
+echo "Stage 2: Cluster"
 
 ./cluster.sh
 
 
-echo "Stage 1: Secrets"
+echo "Stage 3: Secrets"
 
 ./secrets.sh
 
 
-echo "Stage 2: Databases"
+echo "Stage 4: Databases"
 
 ./databases.sh
 
 
-echo "Stage 3: Monitoring"
+echo "Stage 5: Monitoring"
 
 if [[ "$with_monitoring" == true ]]; then
     ./monitoring.sh
@@ -39,7 +50,7 @@ else
 fi
 
 
-echo "Stage 4: Gateway"
+echo "Stage 6: Gateway"
 
 ./gateway.sh
 
