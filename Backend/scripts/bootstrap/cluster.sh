@@ -35,8 +35,7 @@ kubectl --context "$RATEL_CONTEXT" apply -f namespace-monitoring.yaml
 
 echo "Stage 3: Installing MetalLB"
 
-kubectl --context "$RATEL_CONTEXT" apply \
-  -f https://raw.githubusercontent.com/metallb/metallb/v0.16.1/config/manifests/metallb-native.yaml
+kubectl --context "$RATEL_CONTEXT" apply -f third-party/metallb
 
 kubectl --context "$RATEL_CONTEXT" wait \
   --for=condition=Available \
@@ -55,9 +54,7 @@ kubectl --context "$RATEL_CONTEXT" apply \
 
 echo "Stage 4: Installing Envoy"
 
-kubectl --context "$RATEL_CONTEXT" apply \
-  --server-side \
-  -f https://github.com/envoyproxy/gateway/releases/download/v1.8.3/install.yaml
+kubectl --context "$RATEL_CONTEXT" apply --server-side -f third-party/envoy
 
 kubectl --context "$RATEL_CONTEXT" rollout status \
   deployment/envoy-gateway \
