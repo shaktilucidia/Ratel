@@ -27,7 +27,7 @@ spec:
 
         envFrom:
           - secretRef:
-              name: backend-secrets
+              name: backend-users-secrets
 
         ports:
         - containerPort: 9000

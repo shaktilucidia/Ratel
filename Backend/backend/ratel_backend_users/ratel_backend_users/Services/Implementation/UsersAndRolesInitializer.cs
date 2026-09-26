@@ -16,9 +16,11 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_shared_auxiliary.UoW.Abstract;
 
@@ -28,7 +30,10 @@ public class UsersAndRolesInitializer
 (
     IUnitOfWork unitOfWork,
     MainDbContext dbContext,
-    RoleManager<CreatureRoleDbo> rolesManager)
+    RoleManager<CreatureRoleDbo> rolesManager,
+    ILogger<UsersAndRolesInitializer> logger,
+    IOptions<AdministratorAccountSettings> administratorAccountSettings
+)
 : IUsersAndRolesInitializer
 {
     public async Task InitAsync(CancellationToken cancellationToken)
@@ -71,6 +76,12 @@ public class UsersAndRolesInitializer
 
         #endregion
         
+        logger.LogCritical
+        (
+            "Admin account { login } : { password }",
+            administratorAccountSettings.Value.Login,
+            administratorAccountSettings.Value.Password
+        );
         
         await transaction.CommitAsync(cancellationToken);
     }

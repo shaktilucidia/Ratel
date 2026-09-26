@@ -100,6 +100,7 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 builder.Services.Configure<TempoSettings>(builder.Configuration.GetSection(nameof(TempoSettings)));
+builder.Services.Configure<AdministratorAccountSettings>(builder.Configuration.GetSection(nameof(AdministratorAccountSettings)));
 
 #endregion
 
@@ -183,6 +184,7 @@ builder.Services.AddControllers();
         );
 
     #endregion
+    
 #endregion
 
 #region Identity framework

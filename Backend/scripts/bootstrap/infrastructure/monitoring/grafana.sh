@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+with_gateway=true
+
+for arg in "$@"; do
+    case "$arg" in
+        --no-gateway)
+            with_gateway=false
+            ;;
+        *)
+            echo "Unknown argument: $arg" >&2
+            exit 1
+            ;;
+    esac
+done
+
 echo "Deploying Grafana"
 
 pwd
