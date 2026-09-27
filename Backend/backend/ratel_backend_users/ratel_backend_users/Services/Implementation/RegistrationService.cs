@@ -21,7 +21,6 @@ using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users_dtos.Registration.Enums;
-using ratel_backend_users.Constants;
 using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_observability.Metrics;
@@ -42,14 +41,6 @@ public class RegistrationService
     )
     {
         _ = login ?? throw new ArgumentNullException(nameof(login), "Login must be specified, at least empty string.");
-
-        // TODO: Delete it, I'm just testing logging
-        logger
-            .LogInformation
-            (
-                "Checking if login \"{login}\" is available",
-                login
-            );
 
         return await userManager.FindByNameAsync(login) == null;
     }
@@ -93,6 +84,13 @@ public class RegistrationService
         {
             // Mostly probably password is too weak
             errors.AddUnique(RegistrationError.FailedPasswordTooWeak);
+            
+            logger.LogError
+            (
+                "Failed to create account with login {Login}, errors {Errors}",
+                login,
+                result.GetErrorsAndDescriptions()
+            );
         }
 
         if (errors.Count > 0)
@@ -143,13 +141,7 @@ public class RegistrationService
         
         if (!result.Succeeded)
         {
-            var errors = string.Join
-            (
-                "; ",
-                result.Errors.Select(e => $"{ e.Code }: { e.Description }")
-            );
-
-            throw new InvalidOperationException($"Failed to assign roles to creature { creature.UserName }: { errors }");
+            throw new InvalidOperationException($"Failed to assign roles to creature { creature.UserName }: { result.GetErrorsAndDescriptions() }");
         }
     }
 }

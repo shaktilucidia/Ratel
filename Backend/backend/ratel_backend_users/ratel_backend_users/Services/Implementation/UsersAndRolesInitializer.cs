@@ -23,6 +23,7 @@ using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.DAO.Services.Abstract;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
+using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.UoW.Abstract;
 
 namespace ratel_backend_users.Services.Implementation;
@@ -95,7 +96,7 @@ public class UsersAndRolesInitializer
             {
                 logger.LogInformation
                 (
-                    "Skipping administrative account creation, administratior login and/or password is not set"
+                    "Skipping administrative account creation, administrator login and/or password aren't set"
                 );
             }
             
@@ -111,13 +112,16 @@ public class UsersAndRolesInitializer
             ??
             throw new InvalidOperationException("Bug in code, administrator role is missing");
     
-        if
-        (
-            !await rolesDao.IsCreaturesWithRoleExistsAsync(administratorRole.Id, cancellationToken)
-            &&
-            await userManager.FindByNameAsync(administratorAccountSettings.Login) is null
-        )
+        if (!await rolesDao.IsCreaturesWithRoleExistsAsync(administratorRole.Id, cancellationToken))
         {
+            if (await userManager.FindByNameAsync(administratorAccountSettings.Login) is not null)
+            {
+                throw new InvalidOperationException
+                (
+                    $"Trying to create administrative account, but administrator login \"{ administratorAccountSettings.Login }\" is taken by ordinary user"
+                );
+            }
+            
             logger.LogInformation
             (
                 "Creating administrative account {Login}",
@@ -136,7 +140,8 @@ public class UsersAndRolesInitializer
             {
                 throw new InvalidOperationException
                 (
-                    $"Failed to create administrative account, called { administratorAccountSettings.Login }"
+                    $"Failed to create administrative account, called { administratorAccountSettings.Login }" +
+                    $"Errors: { result.GetErrorsAndDescriptions() }"
                 );
             }
         
