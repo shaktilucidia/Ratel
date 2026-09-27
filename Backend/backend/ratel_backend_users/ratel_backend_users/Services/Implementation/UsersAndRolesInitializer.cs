@@ -16,10 +16,11 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using ratel_backend_users_dtos.Constants;
 using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
+using ratel_backend_users.DAO.Services.Abstract;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_shared_auxiliary.UoW.Abstract;
@@ -32,7 +33,10 @@ public class UsersAndRolesInitializer
     MainDbContext dbContext,
     RoleManager<CreatureRoleDbo> rolesManager,
     ILogger<UsersAndRolesInitializer> logger,
-    IOptions<AdministratorAccountSettings> administratorAccountSettings
+    AdministratorAccountSettings administratorAccountSettings,
+    UserManager<CreatureDbo> userManager,
+    IRolesDao rolesDao,
+    IRegistrationService registrationService
 )
 : IUsersAndRolesInitializer
 {
@@ -75,14 +79,81 @@ public class UsersAndRolesInitializer
             }
 
         #endregion
-        
-        logger.LogCritical
-        (
-            "Admin account { login } : { password }",
-            administratorAccountSettings.Value.Login,
-            administratorAccountSettings.Value.Password
-        );
+
+        #region Create administrative account if no admins exists
+
+            if
+            (
+                !string.IsNullOrWhiteSpace(administratorAccountSettings.Login)
+                &&
+                !string.IsNullOrWhiteSpace(administratorAccountSettings.Password)
+            )
+            {
+                await CreateAdministrativeAccountAsync(cancellationToken);
+            }
+            else
+            {
+                logger.LogInformation
+                (
+                    "Skipping administrative account creation, administratior login and/or password is not set"
+                );
+            }
+            
+        #endregion
         
         await transaction.CommitAsync(cancellationToken);
+    }
+
+    private async Task CreateAdministrativeAccountAsync(CancellationToken cancellationToken)
+    {
+        var administratorRole =
+            await rolesManager.FindByNameAsync(ServerRole.Administrator)
+            ??
+            throw new InvalidOperationException("Bug in code, administrator role is missing");
+    
+        if
+        (
+            !await rolesDao.IsCreaturesWithRoleExistsAsync(administratorRole.Id, cancellationToken)
+            &&
+            await userManager.FindByNameAsync(administratorAccountSettings.Login) is null
+        )
+        {
+            logger.LogInformation
+            (
+                "Creating administrative account {Login}",
+                administratorAccountSettings.Login
+            );
+
+            var adminDbo = new CreatureDbo()
+            {
+                UserName = administratorAccountSettings.Login,
+                SecurityStamp = Guid.NewGuid().ToString() // TODO: Is this secure?
+            };
+
+            var result = await userManager.CreateAsync(adminDbo, administratorAccountSettings.Password);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException
+                (
+                    $"Failed to create administrative account, called { administratorAccountSettings.Login }"
+                );
+            }
+        
+            await registrationService.AddRoleToCreatureAsync
+            (
+                adminDbo.Id, 
+                [
+                    ServerRole.User,
+                    ServerRole.Administrator
+                ]
+            );
+        
+            logger.LogInformation
+            (
+                "Created administrative account {Login}",
+                administratorAccountSettings.Login
+            );
+        }
     }
 }

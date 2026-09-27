@@ -14,28 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace ratel_backend_users.DAO.Services.Abstract;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace ratel_shared_auxiliary.Helpers;
 
 /// <summary>
-/// DAO to work with roles. UserManager is limited and suffers from N+1 problem
+/// Helper with useful stuff for DI
 /// </summary>
-public interface IRolesDao
+public static class DiHelper
 {
     /// <summary>
-    /// Get roles, assigned to creatures
+    /// Register settings class
     /// </summary>
-    Task<IDictionary<Guid, IReadOnlyCollection<string>>> GetRolesNamesForCreaturesAsync
-    (
-        IReadOnlyCollection<Guid> creaturesIds,
-        CancellationToken cancellationToken = default
-    );
-
-    /// <summary>
-    /// Returns true if at least one creature with given role ID exists
-    /// </summary>
-    Task<bool> IsCreaturesWithRoleExistsAsync
-    (
-        Guid roleId,
-        CancellationToken cancellationToken = default
-    );
+    public static void RegisterSettings<TSettings>(WebApplicationBuilder builder) where TSettings : class
+    {
+        builder.Services.Configure<TSettings>(builder.Configuration.GetSection(typeof(TSettings).Name));
+        builder.Services.AddSingleton<TSettings>
+        (
+            provider => provider
+                .GetRequiredService<IOptions<TSettings>>()
+                .Value
+        );
+    }
 }

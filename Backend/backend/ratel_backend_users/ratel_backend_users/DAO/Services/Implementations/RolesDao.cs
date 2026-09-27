@@ -70,4 +70,19 @@ public class RolesDao
             id => (IReadOnlyCollection<string>)rolesByCreature[id].ToList()
         );
     }
+
+    public async Task<bool> IsCreaturesWithRoleExistsAsync
+    (
+        Guid roleId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await dbContext
+        .UserRoles
+        .AnyAsync
+        (
+            ra => ra.RoleId.Equals(roleId),
+            cancellationToken
+        );
+    }
 }

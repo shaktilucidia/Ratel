@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Npgsql;
@@ -35,6 +36,7 @@ using ratel_backend_users.Enums;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
+using ratel_shared_auxiliary.Helpers;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_auxiliary.UoW.Implementations;
 using Serilog;
@@ -98,9 +100,9 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
 #region Settings
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
-builder.Services.Configure<TempoSettings>(builder.Configuration.GetSection(nameof(TempoSettings)));
-builder.Services.Configure<AdministratorAccountSettings>(builder.Configuration.GetSection(nameof(AdministratorAccountSettings)));
+    DiHelper.RegisterSettings<JwtSettings>(builder);
+    DiHelper.RegisterSettings<TempoSettings>(builder);
+    DiHelper.RegisterSettings<AdministratorAccountSettings>(builder);
 
 #endregion
 

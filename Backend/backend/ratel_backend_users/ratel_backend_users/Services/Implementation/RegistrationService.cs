@@ -105,7 +105,7 @@ public class RegistrationService
 
         #region Add roles
         
-            await AddRoleToCreatureAsync(creature.Id, new []{ ServerRole.User });
+            await AddRoleToCreatureAsync(creature.Id, [ ServerRole.User ]);
         
         #endregion
 
