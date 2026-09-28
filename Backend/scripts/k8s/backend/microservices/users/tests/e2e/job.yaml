@@ -18,6 +18,11 @@ spec:
           image: ratel_backend_users_e2e:latest
           imagePullPolicy: IfNotPresent
 
+          envFrom:
+            - secretRef:
+                name: backend-users-secrets
+
+
           env:
             - name: E2E_BASE_URL
               value: "http://ratel-backend-users:9000/api/"

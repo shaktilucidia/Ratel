@@ -24,6 +24,7 @@ using ratel_backend_users.DAO.Services.Abstract;
 using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_shared_auxiliary.Extensions;
+using ratel_shared_auxiliary.Models.Settings;
 using ratel_shared_auxiliary.UoW.Abstract;
 
 namespace ratel_backend_users.Services.Implementation;

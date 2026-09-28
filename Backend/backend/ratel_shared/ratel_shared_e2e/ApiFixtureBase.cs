@@ -29,13 +29,14 @@ public abstract class ApiFixtureBase : IAsyncLifetime
     /// <summary>
     /// Services provider for DI
     /// </summary>
-    protected IServiceProvider _servicesProvider { get; set; } = null!;
+    protected IServiceProvider ServicesProvider { get; private set; } = null!;
 
     public Task InitializeAsync()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
+            .AddEnvironmentVariables()
             .Build();
 
         var services = new ServiceCollection();
@@ -55,7 +56,7 @@ public abstract class ApiFixtureBase : IAsyncLifetime
             commonSettings
         );
 
-        _servicesProvider = services.BuildServiceProvider();
+        ServicesProvider = services.BuildServiceProvider();
 
         return Task.CompletedTask;
     }
@@ -69,17 +70,17 @@ public abstract class ApiFixtureBase : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        if (_servicesProvider is IAsyncDisposable asyncDisposable)
+        if (ServicesProvider is IAsyncDisposable asyncDisposable)
         {
             await asyncDisposable.DisposeAsync();
         }
-        else if (_servicesProvider is IDisposable disposable)
+        else if (ServicesProvider is IDisposable disposable)
         {
             disposable.Dispose();
         }
         else
         {
-            throw new InvalidOperationException($"Unsupported service provider type: { _servicesProvider.GetType().FullName }");
+            throw new InvalidOperationException($"Unsupported service provider type: { ServicesProvider.GetType().FullName }");
         }
     }
 }

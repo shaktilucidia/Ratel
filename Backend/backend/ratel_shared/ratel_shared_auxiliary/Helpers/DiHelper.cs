@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -28,10 +29,15 @@ public static class DiHelper
     /// <summary>
     /// Register settings class
     /// </summary>
-    public static void RegisterSettings<TSettings>(WebApplicationBuilder builder) where TSettings : class
+    public static void RegisterSettings<TSettings>
+    (
+        IServiceCollection services,
+        IConfiguration configuration
+        
+    ) where TSettings : class
     {
-        builder.Services.Configure<TSettings>(builder.Configuration.GetSection(typeof(TSettings).Name));
-        builder.Services.AddSingleton<TSettings>
+        services.Configure<TSettings>(configuration.GetSection(typeof(TSettings).Name));
+        services.AddSingleton<TSettings>
         (
             provider => provider
                 .GetRequiredService<IOptions<TSettings>>()

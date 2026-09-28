@@ -16,8 +16,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using ratel_backend_users_client;
 using ratel_backend_users_client.Services.Abstract;
+using ratel_shared_auxiliary.Helpers;
+using ratel_shared_auxiliary.Models.Settings;
 using ratel_shared_e2e;
 using ratel_shared_e2e.Models.Settings;
 
@@ -28,11 +31,17 @@ namespace ratel_backend_users_e2e.Auxilliary;
 /// </summary>
 public sealed class ApiFixture : ApiFixtureBase
 {
+    #region Settings
+    
+        public AdministratorAccountSettings AdministratorAccountSettings => ServicesProvider.GetRequiredService<AdministratorAccountSettings>();
+    
+    #endregion
+    
     #region Clients
 
-    public IRegistrationClient RegistrationClient => _servicesProvider.GetRequiredService<IRegistrationClient>();
-    public ICreaturesClient CreaturesClient => _servicesProvider.GetRequiredService<ICreaturesClient>();
-    public IRolesClient RolesClient => _servicesProvider.GetRequiredService<IRolesClient>();
+        public IRegistrationClient RegistrationClient => ServicesProvider.GetRequiredService<IRegistrationClient>();
+        public ICreaturesClient CreaturesClient => ServicesProvider.GetRequiredService<ICreaturesClient>();
+        public IRolesClient RolesClient => ServicesProvider.GetRequiredService<IRolesClient>();
 
     #endregion
 
@@ -57,5 +66,11 @@ public sealed class ApiFixture : ApiFixtureBase
                 options.Timeout = commonSettings.Timeout;
             }
         );
+        
+        #region Settings
+        
+            DiHelper.RegisterSettings<AdministratorAccountSettings>(services, configuration);
+        
+        #endregion
     }
 }

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using ratel_backend_users_dtos.Constants;
 using ratel_backend_users_e2e.Auxilliary;
 using Shouldly;
 
@@ -105,6 +106,67 @@ public class CreaturesTests
             loginsToIds.ShouldContainKey(unknownCreatureLogin);
             loginsToIds[unknownCreatureLogin].ShouldBeNull();
 
+        #endregion
+    }
+    
+    /// <summary>
+    /// Administrative account must exist and have required roles
+    /// </summary>
+    [Fact]
+    public async Task AdministrativeAccountMustExistAndHaveRequiredRoles()
+    {
+        #region Act - Get accounts
+
+            var administrativeAccountsIds = await fixture
+                .CreaturesClient
+                .GetIdsByLoginsAsync
+                (
+                    [
+                        fixture.AdministratorAccountSettings.Login
+                    ]
+                );
+
+        #endregion
+
+        #region Assert
+
+        administrativeAccountsIds.ShouldNotBeNull();
+        administrativeAccountsIds.ShouldNotBeEmpty();
+        administrativeAccountsIds.Count.ShouldBe(1);
+        administrativeAccountsIds.ShouldContainKey(fixture.AdministratorAccountSettings.Login);
+        administrativeAccountsIds[fixture.AdministratorAccountSettings.Login].ShouldNotBeNull();
+
+        #endregion
+        
+        #region Arrange - Administrative account ID
+
+            var administrativeAccountId = administrativeAccountsIds[fixture.AdministratorAccountSettings.Login]!.Value;
+        
+        #endregion
+        
+        #region Act - Get roles
+        
+            var assignedRoles = await fixture
+                .RolesClient
+                .GetRolesByCreaturesIdsAsync
+                (
+                    [
+                        administrativeAccountId
+                    ]
+                );
+        
+        #endregion
+        
+        #region Assert - Roles
+
+            assignedRoles.ShouldNotBeNull();
+            assignedRoles.ShouldNotBeEmpty();
+            assignedRoles.Count.ShouldBe(1);
+            assignedRoles[administrativeAccountId].ShouldNotBeNull();
+            assignedRoles[administrativeAccountId].ShouldNotBeEmpty();
+            assignedRoles[administrativeAccountId].ShouldContain(ServerRole.User);
+            assignedRoles[administrativeAccountId].ShouldContain(ServerRole.Administrator);
+        
         #endregion
     }
 }

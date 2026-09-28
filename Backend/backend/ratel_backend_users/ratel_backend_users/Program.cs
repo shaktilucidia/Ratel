@@ -37,6 +37,7 @@ using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_backend_users.Services.Implementation;
 using ratel_shared_auxiliary.Helpers;
+using ratel_shared_auxiliary.Models.Settings;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_auxiliary.UoW.Implementations;
 using Serilog;
@@ -100,9 +101,9 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
 #region Settings
 
-    DiHelper.RegisterSettings<JwtSettings>(builder);
-    DiHelper.RegisterSettings<TempoSettings>(builder);
-    DiHelper.RegisterSettings<AdministratorAccountSettings>(builder);
+    DiHelper.RegisterSettings<JwtSettings>(builder.Services, builder.Configuration);
+    DiHelper.RegisterSettings<TempoSettings>(builder.Services, builder.Configuration);
+    DiHelper.RegisterSettings<AdministratorAccountSettings>(builder.Services, builder.Configuration);
 
 #endregion
 

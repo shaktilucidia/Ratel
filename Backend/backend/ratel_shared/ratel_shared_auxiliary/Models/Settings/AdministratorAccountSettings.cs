@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace ratel_backend_users.Models.Settings;
+namespace ratel_shared_auxiliary.Models.Settings;
 
 /// <summary>
 /// Settings, used when creating administrator account
