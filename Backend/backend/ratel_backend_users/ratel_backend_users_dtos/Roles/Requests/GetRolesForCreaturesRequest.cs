@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Text.Json.Serialization;
-using ratel_backend_users_dtos.Registration.DTOs;
 using ratel_backend_users_dtos.Roles.DTOs;
 
 namespace ratel_backend_users_dtos.Roles.Requests;

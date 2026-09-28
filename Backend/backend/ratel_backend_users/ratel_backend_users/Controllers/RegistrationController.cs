@@ -17,10 +17,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ratel_backend_users_dtos.Registration.DTOs;
+using ratel_backend_users_dtos.Registration.Extensions;
 using ratel_backend_users_dtos.Registration.Requests;
 using ratel_backend_users_dtos.Registration.Responses;
 using ratel_backend_users.Services.Abstract;
-using ratel_backend_users_dtos.Registration.Extensions;
 
 namespace ratel_backend_users.Controllers;
 

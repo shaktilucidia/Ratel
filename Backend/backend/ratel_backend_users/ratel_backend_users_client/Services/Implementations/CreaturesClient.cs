@@ -17,9 +17,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using ratel_backend_users_client.Services.Abstract;
-using ratel_backend_users_dtos.Registration.DTOs;
-using ratel_backend_users_dtos.Registration.Requests;
-using ratel_backend_users_dtos.Registration.Responses;
 using ratel_backend_users_dtos.Roles.Requests;
 using ratel_backend_users_dtos.Roles.Responses;
 

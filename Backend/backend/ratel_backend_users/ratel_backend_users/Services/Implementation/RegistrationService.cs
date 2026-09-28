@@ -16,11 +16,11 @@
 
 using Microsoft.AspNetCore.Identity;
 using ratel_backend_users_dtos.Constants;
+using ratel_backend_users_dtos.Registration.Enums;
 using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.Metrics;
 using ratel_backend_users.Models.Business.Creatures;
 using ratel_backend_users.Services.Abstract;
-using ratel_backend_users_dtos.Registration.Enums;
 using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_observability.Metrics;

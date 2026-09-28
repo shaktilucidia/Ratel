@@ -68,13 +68,13 @@ public class RolesTests
 
         #region Assert
         
-        creaturesRoles.ShouldNotBeEmpty();
-        creaturesRoles.Count.ShouldBe(1);
-        creaturesRoles.ShouldContainKey(creatureId);
+            creaturesRoles.ShouldNotBeEmpty();
+            creaturesRoles.Count.ShouldBe(1);
+            creaturesRoles.ShouldContainKey(creatureId);
 
-        creaturesRoles[creatureId].ShouldNotBeNull();
-        creaturesRoles[creatureId].ShouldNotBeEmpty();
-        creaturesRoles[creatureId].ShouldContain(ServerRole.User);
+            creaturesRoles[creatureId].ShouldNotBeNull();
+            creaturesRoles[creatureId].ShouldNotBeEmpty();
+            creaturesRoles[creatureId].ShouldContain(ServerRole.User);
         
         #endregion
     }

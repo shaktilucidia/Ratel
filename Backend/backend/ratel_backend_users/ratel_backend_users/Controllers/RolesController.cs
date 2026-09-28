@@ -16,7 +16,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ratel_backend_users_dtos.Registration.Requests;
 using ratel_backend_users_dtos.Roles.DTOs;
 using ratel_backend_users_dtos.Roles.Requests;
 using ratel_backend_users_dtos.Roles.Responses;

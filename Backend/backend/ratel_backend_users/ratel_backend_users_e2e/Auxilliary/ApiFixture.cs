@@ -16,7 +16,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ratel_backend_users_client;
 using ratel_backend_users_client.Services.Abstract;
 using ratel_shared_auxiliary.Helpers;

@@ -21,7 +21,6 @@ using ratel_backend_users.Constants;
 using ratel_backend_users.DAO.Contexts;
 using ratel_backend_users.DAO.Models.Creatures;
 using ratel_backend_users.DAO.Services.Abstract;
-using ratel_backend_users.Models.Settings;
 using ratel_backend_users.Services.Abstract;
 using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.Models.Settings;
