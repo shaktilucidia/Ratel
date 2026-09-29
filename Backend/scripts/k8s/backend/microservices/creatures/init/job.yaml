@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: ratel-init-backend-creatures
+  namespace: ratel-backend
+
+
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+      - name: ratel-backend-creatures
+        image: ratel_backend_creatures:latest
+        imagePullPolicy: IfNotPresent
+
+        args: ["init_creatures"]
+
+        envFrom:
+        - secretRef:
+            name: backend-creatures-secrets

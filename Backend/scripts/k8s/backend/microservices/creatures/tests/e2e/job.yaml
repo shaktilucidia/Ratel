@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: ratel-backend-creatures-e2e
+  namespace: ratel-backend
+
+spec:
+  backoffLimit: 0
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: tests
+
+          image: ratel_backend_creatures_e2e:latest
+          imagePullPolicy: IfNotPresent
+
+          envFrom:
+            - secretRef:
+                name: backend-creatures-secrets
+
+
+          env:
+            - name: E2E_BASE_URL
+              value: "http://ratel-backend-creatures:9000/api/"

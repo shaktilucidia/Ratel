@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Microservices - Users"
+echo "Microservices - Creatures"
 
-./microservices/users.sh "$@"
+./microservices/creatures.sh "$@"
 
 exit 0
