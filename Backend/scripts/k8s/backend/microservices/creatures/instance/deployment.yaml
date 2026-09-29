@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ratel-backend-creatures
+  namespace: ratel-backend
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ratel-backend-creatures
+
+  template:
+    metadata:
+      labels:
+        app: ratel-backend-creatures
+    spec:
+      containers:
+      - name: ratel-backend-creatures
+        image: ratel_backend_creatures:latest
+        imagePullPolicy: IfNotPresent
+
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+
+        envFrom:
+          - secretRef:
+              name: backend-creatures-secrets
+
+        ports:
+        - containerPort: 9000
+
+        startupProbe:
+          httpGet:
+            path: /api/creatures/health/is_started
+            port: 9000
+          periodSeconds: 5
+          failureThreshold: 30
+
+        readinessProbe:
+          httpGet:
+            path: /api/creatures/health/is_ready
+            port: 9000
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /api/creatures/health/is_alive
+            port: 9000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3

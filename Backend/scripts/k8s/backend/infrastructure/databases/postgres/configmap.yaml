@@ -11,12 +11,12 @@ data:
     set -e
 
     psql -v ON_ERROR_STOP=1 --username postgres <<EOF
-    CREATE ROLE ratel_backend_users
+    CREATE ROLE ratel_backend_creatures
       LOGIN
-      PASSWORD '${RATEL_BACKEND_USERS_PASSWORD}';
+      PASSWORD '${RATEL_BACKEND_CREATURES_PASSWORD}';
 
-    ALTER ROLE ratel_backend_users CREATEDB;
+    ALTER ROLE ratel_backend_creatures CREATEDB;
 
-    CREATE DATABASE ratel_backend_users
-      OWNER ratel_backend_users;
+    CREATE DATABASE ratel_backend_creatures
+      OWNER ratel_backend_creatures;
     EOF

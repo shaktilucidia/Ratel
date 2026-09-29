@@ -1,0 +1,52 @@
+﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+WORKDIR /source
+
+COPY Directory.Build.props .
+COPY Directory.Packages.props .
+COPY Ratel.Backend.slnx .
+
+COPY ratel_backend_creatures/ratel_backend_creatures/*.csproj \
+     ratel_backend_creatures/ratel_backend_creatures/
+
+COPY ratel_backend_creatures/ratel_backend_creatures_dtos/*.csproj \
+     ratel_backend_creatures/ratel_backend_creatures_dtos/
+
+COPY ratel_shared/ratel_shared_observability/*.csproj \
+     ratel_shared/ratel_shared_observability/
+
+COPY ratel_shared/ratel_shared_auxiliary/*.csproj \
+     ratel_shared/ratel_shared_auxiliary/
+
+RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locked \
+    dotnet restore \
+    ratel_backend_creatures/ratel_backend_creatures/ratel_backend_creatures.csproj
+
+COPY . .
+
+RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locked \
+    dotnet publish \
+    ratel_backend_creatures/ratel_backend_creatures/ratel_backend_creatures.csproj \
+    -c Release \
+    -o /app \
+    --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime-base
+
+WORKDIR /app
+
+COPY --from=build /app .
+
+# Main app
+FROM runtime-base AS runtime
+
+ENTRYPOINT ["dotnet", "ratel_backend_creatures.dll", "--urls=http://+:9000"]
+
+# Migrations
+
+FROM runtime-base AS migrations
+
+# PostgreSQL client for checking is PostgreSQL ready
+RUN apt-get update \
+    && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*

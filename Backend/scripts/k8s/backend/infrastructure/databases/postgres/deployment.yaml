@@ -31,11 +31,11 @@ spec:
                   name: postgres-secrets
                   key: postgres-password
 
-            - name: RATEL_BACKEND_USERS_PASSWORD
+            - name: RATEL_BACKEND_CREATURES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secrets
-                  key: ratel-backend-users-password
+                  key: ratel-backend-creatures-password
 
           volumeMounts:
             - name: postgres-storage

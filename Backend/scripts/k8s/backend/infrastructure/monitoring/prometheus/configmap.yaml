@@ -17,9 +17,9 @@ data:
           - targets:
               - localhost:9090
 
-      - job_name: ratel-backend-users
+      - job_name: ratel-backend-creatures
         metrics_path: /metrics
 
         static_configs:
           - targets:
-              - ratel-backend-users.ratel-backend.svc.cluster.local:9000
+              - ratel-backend-creatures.ratel-backend.svc.cluster.local:9000

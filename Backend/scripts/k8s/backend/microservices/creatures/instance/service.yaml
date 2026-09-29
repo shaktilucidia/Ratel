@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratel-backend-creatures
+  namespace: ratel-backend
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: ratel-backend-creatures
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9000
+      targetPort: 9000

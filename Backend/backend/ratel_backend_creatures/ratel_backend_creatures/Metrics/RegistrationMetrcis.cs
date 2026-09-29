@@ -1,0 +1,45 @@
+// Ratel - Opensource federated messenger
+// Copyright (C) 2026 Shakti Lucidia
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using System.Diagnostics.Metrics;
+
+namespace ratel_backend_creatures.Metrics;
+
+/// <summary>
+/// Metrics, related to creatures registration
+/// </summary>
+public static class RegistrationMetrics
+{
+    /// <summary>
+    /// Meter itself
+    /// </summary>
+    public static readonly Meter Meter = new Meter(Constants.Metrics.Registration);
+
+    /// <summary>
+    /// Total count of registered creatures
+    /// </summary>
+    public static readonly Counter<long> RegistrationAttemptsCount = Meter.CreateCounter<long>("ratel_creatures_registration_attempts_total");
+
+    /// <summary>
+    /// Registration speed
+    /// </summary>
+    public static readonly Histogram<double> RegistrationDuration
+        = Meter.CreateHistogram<double>
+        (
+            "ratel_creatures_registration_duration",
+            unit: "ms"
+        );
+}
