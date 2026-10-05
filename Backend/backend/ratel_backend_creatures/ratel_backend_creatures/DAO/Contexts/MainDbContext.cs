@@ -16,22 +16,54 @@
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ratel_backend_creatures.Constants.DAO;
 using ratel_backend_creatures.DAO.Models.Creatures;
+using ratel_backend_creatures.DAO.Models.Sessions;
 
 namespace ratel_backend_creatures.DAO.Contexts;
 
 /// <summary>
 /// Main database context, can be used as Identity Framework context
 /// </summary>
-public class MainDbContext : IdentityDbContext<CreatureDbo, CreatureRoleDbo, Guid>
+public class MainDbContext
+(
+    DbContextOptions<MainDbContext> options
+) : IdentityDbContext<CreatureDbo, CreatureRoleDbo, Guid>(options)
 {
-    public MainDbContext(DbContextOptions<MainDbContext> options) : base(options)
-    {
-        
-    }
-
+    /// <summary>
+    /// Creatures sessions
+    /// </summary>
+    public DbSet<CreatureSessionDbo> CreatureSessions => Set<CreatureSessionDbo>();
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<CreatureSessionDbo>
+        (
+            entity =>
+            {
+                entity.HasKey(session => session.Id);
+
+                entity.Property(session => session.Name).HasMaxLength(Sessions.NameMaxLength);
+
+                entity.HasIndex(session => session.CreatureId);
+
+                // Session have one creature, creature have many sessions
+                entity.HasOne<CreatureDbo>()
+                    .WithMany()
+                    .HasForeignKey(session => session.CreatureId);
+
+                // Session have many tokens, token belongs to one session
+                entity.HasMany<SessionRefreshTokenDbo>(session => session.RefreshTokens)
+                    .WithOne()
+                    .HasForeignKey(token => token.SessionId);
+
+                // Session have many events, event belongs to one session
+                entity.HasMany<SessionEventDbo>(session => session.Events)
+                    .WithOne()
+                    .HasForeignKey(sessionEvent => sessionEvent.SessionId);
+            }
+        );
     }
 }

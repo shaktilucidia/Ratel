@@ -21,7 +21,7 @@ namespace ratel_backend_creatures.DAO.Models.Creatures;
 /// <summary>
 /// Creature in database, i.e. user account
 /// </summary>
-public class CreatureDbo : IdentityUser<Guid>
+public sealed class CreatureDbo : IdentityUser<Guid>
 {
     
 }

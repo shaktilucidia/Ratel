@@ -14,22 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
-
-namespace ratel_backend_creatures.DAO.Models.Creatures;
+namespace ratel_backend_creatures.Constants.DAO;
 
 /// <summary>
-/// Creature role
+/// Constants, related to sessions
 /// </summary>
-public sealed class CreatureRoleDbo : IdentityRole<Guid>
+public static class Sessions
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
-    
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// Session name maximal length
+    /// </summary>
+    public const int NameMaxLength = 256;
 }

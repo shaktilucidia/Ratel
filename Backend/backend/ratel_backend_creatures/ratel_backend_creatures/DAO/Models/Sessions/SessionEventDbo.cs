@@ -14,22 +14,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
+using System.Net;
+using ratel_backend_creatures.Enums.Sessions;
 
-namespace ratel_backend_creatures.DAO.Models.Creatures;
+namespace ratel_backend_creatures.DAO.Models.Sessions;
 
 /// <summary>
-/// Creature role
+/// Event, related to session
 /// </summary>
-public sealed class CreatureRoleDbo : IdentityRole<Guid>
+public sealed class SessionEventDbo
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
+    /// <summary>
+    /// Event ID
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Event relates to this session
+    /// </summary>
+    public Guid SessionId { get; set; }
     
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// What happened
+    /// </summary>
+    public SessionEventType Type { get; set; }
+
+    /// <summary>
+    /// Event came from this IP
+    /// </summary>
+    public required IPAddress Source { get; set; }
+
+    /// <summary>
+    /// Arbitrary string with device information (useragent-style)
+    /// </summary>
+    public required string DeviceInfo { get; set; }
 }

@@ -14,22 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.AspNetCore.Identity;
-
-namespace ratel_backend_creatures.DAO.Models.Creatures;
+namespace ratel_backend_creatures.Enums.Sessions;
 
 /// <summary>
-/// Creature role
+/// Session event type
 /// </summary>
-public sealed class CreatureRoleDbo : IdentityRole<Guid>
+public enum SessionEventType
 {
-    private CreatureRoleDbo()
-    {
-        
-    }
+    /// <summary>
+    /// Session was created
+    /// </summary>
+    Created,
     
-    public CreatureRoleDbo(string name) : base(name)
-    {
-        Id = Guid.NewGuid();
-    }
+    /// <summary>
+    /// Session was updated (creature did something, like sent a message)
+    /// </summary>
+    Updated,
+    
+    /// <summary>
+    /// Session was revoked
+    /// </summary>
+    Revoked
 }
