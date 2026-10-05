@@ -65,5 +65,15 @@ public class MainDbContext
                     .HasForeignKey(sessionEvent => sessionEvent.SessionId);
             }
         );
+
+        modelBuilder.Entity<SessionRefreshTokenDbo>
+        (
+            entity =>
+            {
+                entity.HasKey(token => token.Id);
+                
+                entity.HasIndex(token => token.TokenHash).IsUnique();
+            }
+        );
     }
 }

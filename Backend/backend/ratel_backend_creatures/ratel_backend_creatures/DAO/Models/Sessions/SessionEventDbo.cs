@@ -35,6 +35,11 @@ public sealed class SessionEventDbo
     public Guid SessionId { get; set; }
     
     /// <summary>
+    /// When even happened
+    /// </summary>
+    public DateTime OccurredAt { get; set; }
+    
+    /// <summary>
     /// What happened
     /// </summary>
     public SessionEventType Type { get; set; }
