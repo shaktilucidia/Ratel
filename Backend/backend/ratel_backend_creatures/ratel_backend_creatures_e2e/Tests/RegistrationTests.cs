@@ -94,7 +94,7 @@ public class RegistrationTests
 
         #region Assert
 
-            registrationErrors.ShouldContain(RegistrationError.FailedLoginEmpty);
+            registrationErrors.ShouldContain(RegistrationError.LoginEmpty);
 
         #endregion
     }
@@ -118,7 +118,7 @@ public class RegistrationTests
 
         #region Assert
 
-            registrationErrors.ShouldContain(RegistrationError.FailedPasswordEmpty);
+            registrationErrors.ShouldContain(RegistrationError.PasswordEmpty);
 
         #endregion
     }
@@ -143,7 +143,7 @@ public class RegistrationTests
 
         #region Assert
 
-            registrationErrors.ShouldContain(RegistrationError.FailedPasswordTooWeak);
+            registrationErrors.ShouldContain(RegistrationError.PasswordTooWeak);
 
         #endregion
     }

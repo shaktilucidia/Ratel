@@ -79,9 +79,9 @@ public static class RegistrationResultExtension
     /// </summary>
     private static readonly Dictionary<RegistrationError, string> _errorsToFieldsNames = new ()
     {
-        [RegistrationError.FailedLoginEmpty] = _fieldsNames[FieldName.Login],
-        [RegistrationError.FailedPasswordEmpty] = _fieldsNames[FieldName.Password],
-        [RegistrationError.FailedPasswordTooWeak] = _fieldsNames[FieldName.Password]
+        [RegistrationError.LoginEmpty] = _fieldsNames[FieldName.Login],
+        [RegistrationError.PasswordEmpty] = _fieldsNames[FieldName.Password],
+        [RegistrationError.PasswordTooWeak] = _fieldsNames[FieldName.Password]
     };
 
     /// <summary>
@@ -89,9 +89,9 @@ public static class RegistrationResultExtension
     /// </summary>
     private static readonly Dictionary<RegistrationError, string> _errorsToDescriptions = new ()
     {
-        [RegistrationError.FailedLoginEmpty] = _validationErrors[ValidationError.IsEmpty],
-        [RegistrationError.FailedPasswordEmpty] = _validationErrors[ValidationError.IsEmpty],
-        [RegistrationError.FailedPasswordTooWeak] = _validationErrors[ValidationError.TooWeak]
+        [RegistrationError.LoginEmpty] = _validationErrors[ValidationError.IsEmpty],
+        [RegistrationError.PasswordEmpty] = _validationErrors[ValidationError.IsEmpty],
+        [RegistrationError.PasswordTooWeak] = _validationErrors[ValidationError.TooWeak]
     };
 
     /// <summary>
@@ -120,7 +120,7 @@ public static class RegistrationResultExtension
             return controller.Created();
         }
 
-        if (errors.Contains(RegistrationError.FailedLoginTaken))
+        if (errors.Contains(RegistrationError.LoginTaken))
         {
             return controller
                     .Conflict
@@ -140,7 +140,7 @@ public static class RegistrationResultExtension
             .Overlaps
             (
                 [
-                    RegistrationError.FailedLoginTaken
+                    RegistrationError.LoginTaken
                 ]
             )
         )
@@ -214,7 +214,7 @@ public static class RegistrationResultExtension
         {
             LoginIsTakenProblemType => new HashSet<RegistrationError>
             {
-                RegistrationError.FailedLoginTaken
+                RegistrationError.LoginTaken
             },
 
             _ => throw new InvalidOperationException($"Unknown registration conflict problem type: '{ problemDetails.Type }'")

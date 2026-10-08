@@ -58,17 +58,17 @@ public class RegistrationService
 
         if (string.IsNullOrWhiteSpace(login))
         {
-            errors.AddUnique(RegistrationError.FailedLoginEmpty);
+            errors.AddUnique(RegistrationError.LoginEmpty);
         }
 
         if (string.IsNullOrWhiteSpace(password))
         {
-            errors.AddUnique(RegistrationError.FailedPasswordEmpty);
+            errors.AddUnique(RegistrationError.PasswordEmpty);
         }
 
         if (await userManager.FindByNameAsync(login) != null)
         {
-            errors.Add(RegistrationError.FailedLoginTaken);
+            errors.Add(RegistrationError.LoginTaken);
         }
 
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -83,7 +83,7 @@ public class RegistrationService
         if (!result.Succeeded)
         {
             // Mostly probably password is too weak
-            errors.AddUnique(RegistrationError.FailedPasswordTooWeak);
+            errors.AddUnique(RegistrationError.PasswordTooWeak);
             
             logger.LogError
             (
