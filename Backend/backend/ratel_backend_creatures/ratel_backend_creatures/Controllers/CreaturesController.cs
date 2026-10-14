@@ -45,6 +45,8 @@ public class CreaturesController
         CancellationToken cancellationToken
     )
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         return Ok
         (
             new GetCreaturesIdsByLoginsResponse()

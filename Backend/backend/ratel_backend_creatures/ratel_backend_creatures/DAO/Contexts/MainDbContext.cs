@@ -72,7 +72,7 @@ public class MainDbContext
             {
                 entity.HasKey(token => token.Id);
                 
-                entity.HasIndex(token => token.TokenHash).IsUnique();
+                entity.HasIndex(token => token.Hash).IsUnique();
             }
         );
     }

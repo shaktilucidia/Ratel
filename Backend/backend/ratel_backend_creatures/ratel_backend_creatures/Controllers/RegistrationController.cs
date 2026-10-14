@@ -46,7 +46,7 @@ public class RegistrationController
         CancellationToken cancellationToken
     )
     {
-        _ = request ?? throw new ArgumentNullException(nameof(request), "Request must be provided");
+        ArgumentNullException.ThrowIfNull(request);
 
         return Ok
         (
@@ -72,7 +72,7 @@ public class RegistrationController
         CancellationToken cancellationToken
     )
     {
-        _ = request ?? throw new ArgumentNullException(nameof(request), "Request must be provided");
+        ArgumentNullException.ThrowIfNull(request);
 
         return this
             .ToActionResult

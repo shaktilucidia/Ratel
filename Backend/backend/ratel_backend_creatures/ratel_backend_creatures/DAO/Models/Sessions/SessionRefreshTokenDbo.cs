@@ -34,7 +34,7 @@ public sealed class SessionRefreshTokenDbo
     /// <summary>
     /// Token hash
     /// </summary>
-    public required string TokenHash { get; set; }
+    public required string Hash { get; set; }
 
     /// <summary>
     /// Token created at this time

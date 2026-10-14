@@ -25,4 +25,14 @@ public static class Sessions
     /// Session refresh token length
     /// </summary>
     public const int RefreshTokenLength = 64;
+
+    /// <summary>
+    /// Hexadecimal refresh token hash representation have this length in characters
+    /// </summary>
+    public const int RefreshTokenHashHexStringLength = 128;
+
+    /// <summary>
+    /// Refresh token lifetime in days
+    /// </summary>
+    public const int RefreshTokenLifetime = 30;
 }

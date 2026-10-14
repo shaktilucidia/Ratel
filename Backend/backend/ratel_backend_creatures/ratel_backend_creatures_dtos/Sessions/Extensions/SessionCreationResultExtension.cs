@@ -101,15 +101,15 @@ public static class SessionCreationResultExtension
     };
     
     /// <summary>
-    /// Convert registration result to action result
+    /// Session creation result to action result
     /// </summary>
     public static IActionResult ToActionResult
     (
         this ControllerBase controller,
         IReadOnlySet<SessionCreationError> errors,
-        string refreshToken,
-        string accessToken,
-        DateTime accessTokenValidTill
+        string? refreshToken,
+        string? accessToken,
+        DateTime? accessTokenValidTill
     )
     {
         ArgumentNullException.ThrowIfNull(errors);
@@ -118,6 +118,7 @@ public static class SessionCreationResultExtension
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(refreshToken);
             ArgumentException.ThrowIfNullOrWhiteSpace(accessToken);
+            ArgumentNullException.ThrowIfNull(accessTokenValidTill);
             
             return controller.Ok
             (
@@ -127,7 +128,7 @@ public static class SessionCreationResultExtension
                     {
                         RefreshToken = refreshToken,
                         AccessToken = accessToken,
-                        AccessTokenValidTill = accessTokenValidTill
+                        AccessTokenValidTill = accessTokenValidTill.Value
                     }
                 }
             );
@@ -184,7 +185,7 @@ public static class SessionCreationResultExtension
                     Title = "Wrong password",
                     Extensions =
                     {
-                        ["code"] = "invalid_credentials"
+                        ["code"] = "wrong_password"
                     }
                 }
             );

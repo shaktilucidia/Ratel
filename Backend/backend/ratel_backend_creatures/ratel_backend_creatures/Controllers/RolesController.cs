@@ -45,6 +45,8 @@ public class RolesController
         CancellationToken cancellationToken
     )
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         return Ok
         (
             new GetRolesForCreaturesResponse()

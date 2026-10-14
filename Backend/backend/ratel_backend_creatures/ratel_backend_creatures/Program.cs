@@ -31,11 +31,13 @@ using ratel_backend_creatures.DAO.Contexts;
 using ratel_backend_creatures.DAO.Models.Creatures;
 using ratel_backend_creatures.DAO.Services.Abstract;
 using ratel_backend_creatures.DAO.Services.Implementations;
+using ratel_backend_creatures.DAO.Services.Implementations.Sessions;
 using ratel_backend_creatures.Models.Settings;
 using ratel_backend_creatures.Services.Abstract;
 using ratel_backend_creatures.Services.Implementation;
 using ratel_shared_auxiliary.Helpers;
 using ratel_shared_auxiliary.Models.Settings;
+using ratel_shared_auxiliary.Services.Abstract;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_auxiliary.UoW.Implementations;
 using Serilog;
@@ -80,18 +82,26 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
     #region Scoped
 
-    #region DAOs
+        #region DAOs
 
-        builder.Services.AddScoped<IRolesDao, RolesDao>();
+            builder.Services.AddScoped<IRolesDao, RolesDao>();
+            builder.Services.AddScoped<ISessionsDao, SessionsDao>();
+        
+        #endregion
     
+        builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+        builder.Services.AddScoped<IHealthService, HealthService>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
+        builder.Services.AddScoped<ICreaturesAndRolesInitializer, CreaturesAndRolesInitializer>();
+        builder.Services.AddScoped<IRolesService, RolesService>();
+        builder.Services.AddScoped<ICreaturesService, CreaturesService>();
+        builder.Services.AddScoped<ISessionsService, SessionsService>();
+
     #endregion
-    
-    builder.Services.AddScoped<IRegistrationService, RegistrationService>();
-    builder.Services.AddScoped<IHealthService, HealthService>();
-    builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
-    builder.Services.AddScoped<ICreaturesAndRolesInitializer, CreaturesAndRolesInitializer>();
-    builder.Services.AddScoped<IRolesService, RolesService>();
-    builder.Services.AddScoped<ICreaturesService, CreaturesService>();
+
+    #region Singletions
+
+        builder.Services.AddSingleton<ITimeProvider, ratel_shared_auxiliary.Services.Implementations.TimeProvider>();    
 
     #endregion
 
