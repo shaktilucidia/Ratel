@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace ratel_shared_auxiliary.Helpers;
-
-using System;
 using System.Security.Cryptography;
+
+namespace ratel_shared_auxiliary.Helpers;
 
 /// <summary>
 /// Use it to generate secure GUIDs

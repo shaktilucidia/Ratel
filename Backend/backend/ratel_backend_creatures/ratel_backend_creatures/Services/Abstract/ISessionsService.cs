@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Net;
 using ratel_backend_creatures_dtos.Sessions.Enums;
 
 namespace ratel_backend_creatures.Services.Abstract;
@@ -29,12 +30,16 @@ public interface ISessionsService
     /// <param name="login">Login</param>
     /// <param name="password">Password</param>
     /// <param name="cancellationToken">Cancellation token</param>
+    /// <param name="source">Session creation request came from this address</param>
+    /// <param name="deviceInfo">This device is trying to create a session</param>
     /// <returns>Tuple with errors, refresh token, access token and access token lifetime
     /// Tokens and lifetime aren't null only if there are no errors</returns>
     Task<Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>> CreateAsync
     (
         string login,
         string password,
+        IPAddress source,
+        string deviceInfo,
         CancellationToken cancellationToken = default
     );  
 }

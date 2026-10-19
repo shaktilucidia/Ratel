@@ -57,8 +57,10 @@ kubectl --context "$RATEL_CONTEXT" wait \
 echo "Restarting deployment..."
 
 kubectl --context "$RATEL_CONTEXT" apply \
+    -f ../k8s/backend/microservices/creatures/instance/configmap.yaml \
     -f ../k8s/backend/microservices/creatures/instance/deployment.yaml \
     -f ../k8s/backend/microservices/creatures/instance/service.yaml
+
 
 if [[ "$with_gateway" == true ]]; then
     kubectl --context "$RATEL_CONTEXT" apply \

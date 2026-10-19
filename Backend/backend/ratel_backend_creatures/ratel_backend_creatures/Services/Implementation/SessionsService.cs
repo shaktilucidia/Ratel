@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Collections.ObjectModel;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
 using ratel_backend_creatures_dtos.Sessions.Enums;
@@ -37,16 +36,21 @@ public class SessionsService
     SignInManager<CreatureDbo> signInManager,
     IUnitOfWork unitOfWork,
     ITimeProvider timeProvider,
-    ISessionsDao sessionsDao
+    ISessionsDao sessionsDao,
+    IAccessTokensService accessTokensService
 ) : ISessionsService
 {
     public async Task<Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>> CreateAsync
     (
         string login,
         string password,
+        IPAddress source,
+        string deviceInfo,
         CancellationToken cancellationToken
     )
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceInfo);
+        
         var errors = new HashSet<SessionCreationError>();
         
         if (string.IsNullOrWhiteSpace(login))
@@ -124,7 +128,7 @@ public class SessionsService
             {
                 Id = sessionId,
                 CreatureId = creature.Id,
-                Name = "Unique Session Name", // TODO: Fill with session name
+                Name = SecureStringsGenerator.Generate(Constants.Sessions.SessionDefaultNameLength),
                 
                 RefreshTokens = new List<SessionRefreshTokenDbo>()
                 {
@@ -147,8 +151,8 @@ public class SessionsService
                         SessionId = sessionId,
                         OccurredAt = now,
                         Type = SessionEventType.Created,
-                        Source = IPAddress.Loopback,
-                        DeviceInfo = "Here will be device info"
+                        Source = source,
+                        DeviceInfo = deviceInfo
                     }
                 }
             };
@@ -158,5 +162,25 @@ public class SessionsService
             await transaction.CommitAsync(cancellationToken);
             
         #endregion
+        
+        #region Issuing access token
+
+        var accessToken = accessTokensService.Issue
+        (
+            creature.Id,
+            sessionId,
+            Constants.Sessions.AccessTokenIssuer,
+            ratel_shared_auxiliary.Constants.Sessions.AccessTokenAudience
+        );
+
+        #endregion
+
+        return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
+        (
+            new HashSet<SessionCreationError>(),
+            refreshToken,
+            accessToken.Value,
+            accessToken.ExpiresAt
+        );
     }
 }

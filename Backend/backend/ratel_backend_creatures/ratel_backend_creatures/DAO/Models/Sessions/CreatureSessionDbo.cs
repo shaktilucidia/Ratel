@@ -14,9 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Net;
-using ratel_backend_creatures.DAO.Models.Creatures;
-
 namespace ratel_backend_creatures.DAO.Models.Sessions;
 
 /// <summary>

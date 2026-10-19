@@ -28,6 +28,8 @@ spec:
         envFrom:
           - secretRef:
               name: backend-creatures-secrets
+          - configMapRef:
+              name: backend-creatures-config
 
         ports:
         - containerPort: 9000

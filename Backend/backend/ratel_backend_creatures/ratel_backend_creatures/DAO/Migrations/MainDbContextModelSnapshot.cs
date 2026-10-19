@@ -281,22 +281,22 @@ namespace ratel_backend_creatures.DAO.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("SessionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TokenHash")
+                    b.Property<string>("Hash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UsedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SessionId");
-
-                    b.HasIndex("TokenHash")
+                    b.HasIndex("Hash")
                         .IsUnique();
+
+                    b.HasIndex("SessionId");
 
                     b.ToTable("SessionRefreshTokenDbo");
                 });

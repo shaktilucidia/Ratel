@@ -17,6 +17,7 @@
 using System.IO.Compression;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ using ratel_backend_creatures.DAO.Models.Creatures;
 using ratel_backend_creatures.DAO.Services.Abstract;
 using ratel_backend_creatures.DAO.Services.Implementations;
 using ratel_backend_creatures.DAO.Services.Implementations.Sessions;
+using ratel_backend_creatures.Models.Business.Sessions;
 using ratel_backend_creatures.Models.Settings;
 using ratel_backend_creatures.Services.Abstract;
 using ratel_backend_creatures.Services.Implementation;
@@ -101,8 +103,10 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
     #region Singletions
 
-        builder.Services.AddSingleton<ITimeProvider, ratel_shared_auxiliary.Services.Implementations.TimeProvider>();    
-
+        builder.Services.AddSingleton<ITimeProvider, ratel_shared_auxiliary.Services.Implementations.TimeProvider>();
+        builder.Services.AddSingleton<IAccessTokensService, AccessTokensService>();
+        builder.Services.AddSingleton<AccessTokensSigningKey>();
+    
     #endregion
 
 #endregion
@@ -112,6 +116,8 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
     DiHelper.RegisterSettings<JwtSettings>(builder.Services, builder.Configuration);
     DiHelper.RegisterSettings<TempoSettings>(builder.Services, builder.Configuration);
     DiHelper.RegisterSettings<AdministratorAccountSettings>(builder.Services, builder.Configuration);
+    DiHelper.RegisterSettings<AccessTokensSettings>(builder.Services, builder.Configuration);
+    DiHelper.RegisterSettings<ReverseProxiesSettings>(builder.Services, builder.Configuration);
 
 #endregion
 
@@ -134,6 +140,40 @@ builder.Services.AddControllers();
     {
         options.Level = CompressionLevel.SmallestSize;
     });
+#endregion
+    
+#region Reverse proxies
+    
+    builder
+        .Services
+        .AddOptions<ForwardedHeadersOptions>()
+        .Configure<ReverseProxiesSettings>
+        (
+            (options, settings)
+            =>
+            {
+                ArgumentNullException.ThrowIfNull(settings.TrustedPodsNetworks);
+
+                if (settings.TrustedPodsNetworks.Length is 0)
+                {
+                    throw new InvalidOperationException("At least one trusted pod network must be configured");
+                }
+
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                
+                options.ForwardLimit = 1; // One proxy between clients and backend: Envoy.
+
+                options.KnownProxies.Clear();
+                options.KnownIPNetworks.Clear();
+
+                settings
+                    .TrustedPodsNetworks
+                    .Select(System.Net.IPNetwork.Parse)
+                    .ToList()
+                    .ForEach(options.KnownIPNetworks.Add);
+            }
+        );
+    
 #endregion
 
 #region CORS
@@ -395,53 +435,58 @@ if (isApplyMigrations || isInitCreatures || isUpdateCreatures)
 }
 
 #endregion
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    //app.UseSwagger();
     
-    app.UseSwagger
-    (
-        o =>
-        {
-            o
-                .PreSerializeFilters
-                .Add
-                (
-                    (document, _) =>
-                    {
-                        var paths = new OpenApiPaths();
-
-                        foreach (var path in document.Paths)
+_ = app.Services.GetRequiredService<AccessTokensSigningKey>(); // Check access tokens signing private key load
+    
+#region Middlewares
+    
+    app.UseForwardedHeaders();
+        
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger
+        (
+            o =>
+            {
+                o
+                    .PreSerializeFilters
+                    .Add
+                    (
+                        (document, _) =>
                         {
-                            paths.Add
-                            (
-                                $"{ Microservice.UrlPrefix }{ path.Key }",
-                                path.Value
-                            );
+                            var paths = new OpenApiPaths();
+
+                            foreach (var path in document.Paths)
+                            {
+                                paths.Add
+                                (
+                                    $"{ Microservice.UrlPrefix }{ path.Key }",
+                                    path.Value
+                                );
+                            }
+
+                            document.Paths = paths;
                         }
+                    );
+            }
+        );
+        
+        app.UseSwaggerUI();
+    }
 
-                        document.Paths = paths;
-                    }
-                );
-        }
-    );
+    app.UseAuthentication();
+    app.UseCors();
+    app.UseAuthorization();
+
+    app.UseResponseCompression();
+
+    app.MapPrometheusScrapingEndpoint();
+
+    app
+        .MapGroup(Microservice.UrlPrefix)
+        .MapControllers();
     
-    app.UseSwaggerUI();
-}
-
-app.UseAuthentication();
-app.UseCors();
-app.UseAuthorization();
-
-app.UseResponseCompression();
-
-app.MapPrometheusScrapingEndpoint();
-
-app
-    .MapGroup(Microservice.UrlPrefix)
-    .MapControllers();
+#endregion
 
 app.Run();
 

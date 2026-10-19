@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: backend-creatures-config
+  namespace: ratel-backend
+
+data:
+  ReverseProxySettings__TrustedPodsNetworks__0: "10.244.0.0/24"
+  ReverseProxySettings__TrustedPodsNetworks__1: "fd00:10:244::/64"
+  ReverseProxySettings__TrustedPodsNetworks__2: "10.244.1.0/24"
+  ReverseProxySettings__TrustedPodsNetworks__3: "fd00:10:244:1::/64"

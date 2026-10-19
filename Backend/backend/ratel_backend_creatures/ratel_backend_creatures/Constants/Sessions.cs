@@ -35,4 +35,24 @@ public static class Sessions
     /// Refresh token lifetime in days
     /// </summary>
     public const int RefreshTokenLifetime = 30;
+
+    /// <summary>
+    /// Session default name length
+    /// </summary>
+    public const int SessionDefaultNameLength = 24;
+
+    /// <summary>
+    /// Access tokens lifetime, in minutes
+    /// </summary>
+    public const int AccessTokenLifetime = 10;
+    
+    /// <summary>
+    /// Access tokens signing private key minimal size (in bits)
+    /// </summary>
+    public const int AccessTokenMinimumKeySize = 4096;
+
+    /// <summary>
+    /// Access token issuer name
+    /// </summary>
+    public const string AccessTokenIssuer = "ratel-creatures";
 }

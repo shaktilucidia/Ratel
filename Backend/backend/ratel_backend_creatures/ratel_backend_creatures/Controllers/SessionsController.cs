@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using ratel_backend_creatures_dtos.Sessions.Extensions;
 using ratel_backend_creatures_dtos.Sessions.Requests;
 using ratel_backend_creatures.Services.Abstract;
+using ratel_shared_auxiliary.Controllers;
 
 namespace ratel_backend_creatures.Controllers;
 
@@ -30,7 +31,7 @@ namespace ratel_backend_creatures.Controllers;
 public class SessionsController
 (
     ISessionsService sessionsService
-) : ControllerBase
+) : RatelControllerBase
 {
     /// <summary>
     /// Create a session
@@ -50,6 +51,8 @@ public class SessionsController
         (
             request.CreateSessionData.Login,
             request.CreateSessionData.Password,
+            RequestSource, 
+            UserAgent,
             cancellationToken
         ); 
         
