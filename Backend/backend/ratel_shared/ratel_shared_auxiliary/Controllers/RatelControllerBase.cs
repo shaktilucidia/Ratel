@@ -27,7 +27,7 @@ public abstract class RatelControllerBase : ControllerBase
     /// <summary>
     /// Request came from this address
     /// </summary>
-    public IPAddress RequestSource
+    protected IPAddress RequestSource
     {
         get
         {
@@ -50,5 +50,15 @@ public abstract class RatelControllerBase : ControllerBase
     /// <summary>
     /// Requestor user agent
     /// </summary>
-    public string UserAgent => Request.Headers.UserAgent.ToString();
+    protected string UserAgent
+    {
+        get
+        {
+            var userAgent = Request.Headers.UserAgent.ToString();
+
+            return string.IsNullOrWhiteSpace(userAgent)
+                ? "Missing or empty UserAgent header"
+                : userAgent;
+        }
+    }
 }

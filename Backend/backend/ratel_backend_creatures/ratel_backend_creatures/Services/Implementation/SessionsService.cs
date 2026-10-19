@@ -116,9 +116,9 @@ public class SessionsService
             );
         }
         
-        #region Creating session
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         
-            await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        #region Creating session
 
             var now = timeProvider.GetNow();
             var sessionId = SecureGuidGenerator.Generate();
@@ -158,8 +158,7 @@ public class SessionsService
             };
 
             await sessionsDao.CreateSessionAsync(session, cancellationToken);
-            
-            await transaction.CommitAsync(cancellationToken);
+        
             
         #endregion
         
@@ -174,6 +173,8 @@ public class SessionsService
         );
 
         #endregion
+        
+        await transaction.CommitAsync(cancellationToken);
 
         return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
         (
