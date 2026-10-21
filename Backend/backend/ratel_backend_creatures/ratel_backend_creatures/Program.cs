@@ -112,8 +112,7 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 #endregion
 
 #region Settings
-
-    DiHelper.RegisterSettings<JwtSettings>(builder.Services, builder.Configuration);
+    
     DiHelper.RegisterSettings<TempoSettings>(builder.Services, builder.Configuration);
     DiHelper.RegisterSettings<AdministratorAccountSettings>(builder.Services, builder.Configuration);
     DiHelper.RegisterSettings<AccessTokensSettings>(builder.Services, builder.Configuration);
@@ -237,57 +236,30 @@ builder.Services.AddControllers();
     #endregion
     
 #endregion
-
+    
 #region Identity framework
 
-    // Identity
-    builder.Services.AddIdentity<CreatureDbo, CreatureRoleDbo>()
+    builder.Services
+        .AddIdentity<CreatureDbo, CreatureRoleDbo>()
         .AddEntityFrameworkStores<MainDbContext>()
         .AddDefaultTokenProviders();
 
-    builder.Services.Configure<IdentityOptions>(options =>
-    {
-        // Password settings
-        options.Password.RequiredLength = 8;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireDigit = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequiredUniqueChars = 4;
-    });
-
-    var jwtSettings = builder
-        .Configuration
-        .GetSection(nameof(JwtSettings))
-        .Get<JwtSettings>();
-
-    _ = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings), "JWT settings aren't specified");
-
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-
-    // Adding Jwt Bearer
-    .AddJwtBearer(options =>
+    builder.Services.Configure<IdentityOptions>
+    (
+        options
+        =>
         {
-            options.SaveToken = true;
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = jwtSettings.ValidAudience,
-                ValidIssuer = jwtSettings.ValidIssuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-            };
+            options.Password.RequiredLength = 8;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequiredUniqueChars = 4;
         }
     );
 
-#endregion
-
+#endregion    
+    
 #region Swagger
 
     builder.Services.AddEndpointsApiExplorer();
@@ -297,7 +269,7 @@ builder.Services.AddControllers();
         {
             sgo.SwaggerDoc("v1", new OpenApiInfo() { Title = "Ratel creatures API", Version = "v1" });
 
-            sgo.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            /*sgo.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
                 Description = @"JWT Authorization token",
@@ -309,7 +281,7 @@ builder.Services.AddControllers();
             sgo.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
-            });
+            });*/
         }
     );
 
