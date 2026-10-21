@@ -353,19 +353,20 @@ builder.Services.AddControllers();
         {
             sgo.SwaggerDoc("v1", new OpenApiInfo() { Title = "Ratel creatures API", Version = "v1" });
 
-            /*sgo.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            sgo.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
-                Description = @"JWT Authorization token",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Description = "JWT Authorization header using the Bearer scheme",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header
             });
 
             sgo.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                [new OpenApiSecuritySchemeReference("bearer", document)] = []
-            });*/
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+            });
         }
     );
 

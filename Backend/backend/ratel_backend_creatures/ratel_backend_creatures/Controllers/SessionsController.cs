@@ -65,4 +65,21 @@ public class SessionsController
                 result.Item4
             );
     }
+    
+    /// <summary>
+    /// TODO: Delete it, just for debugging
+    /// </summary>
+    [Authorize]
+    [HttpGet("current_session")]
+    public IActionResult GetCurrentSession()
+    {
+        var creatureId = Guid.Parse(User.FindFirst("sub")!.Value);
+        var sessionId = Guid.Parse(User.FindFirst("sid")!.Value);
+
+        return Ok(new
+        {
+            CreatureId = creatureId,
+            SessionId = sessionId
+        });
+    }
 }
