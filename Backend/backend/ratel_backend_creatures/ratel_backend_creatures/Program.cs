@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.IO.Compression;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -222,17 +221,11 @@ builder.Services.AddControllers();
             options
             =>
             {
-                options.ConfigureCommandSpanNameProvider(command =>
-                {
-                    // Span name in traces
-                    return $"PostgreSQL {command.CommandText.Split(' ')[0]}";
-                });
+                // Span name in traces
+                options.ConfigureCommandSpanNameProvider(command => $"PostgreSQL {command.CommandText.Split(' ')[0]}");
 
-                options.ConfigureCommandFilter(command =>
-                {
-                    // Do not trace tiny SELECT 1 queries, they are used for health checks and are not important
-                    return !command.CommandText.StartsWith("SELECT 1");
-                });
+                // Do not trace tiny SELECT 1 queries, they are used for health checks and are not important
+                options.ConfigureCommandFilter(command => !command.CommandText.StartsWith("SELECT 1"));
             }
         );
 
