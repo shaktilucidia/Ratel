@@ -17,6 +17,7 @@
 using System.IO.Compression;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -28,6 +29,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ratel_backend_creatures.Constants;
+using ratel_backend_creatures.CustomImplementations;
 using ratel_backend_creatures.DAO.Contexts;
 using ratel_backend_creatures.DAO.Models.Creatures;
 using ratel_backend_creatures.DAO.Services.Abstract;
@@ -90,15 +92,25 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
             builder.Services.AddScoped<ISessionsDao, SessionsDao>();
         
         #endregion
-    
-        builder.Services.AddScoped<IRegistrationService, RegistrationService>();
-        builder.Services.AddScoped<IHealthService, HealthService>();
-        builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
-        builder.Services.AddScoped<ICreaturesAndRolesInitializer, CreaturesAndRolesInitializer>();
-        builder.Services.AddScoped<IRolesService, RolesService>();
-        builder.Services.AddScoped<ICreaturesService, CreaturesService>();
-        builder.Services.AddScoped<ISessionsService, SessionsService>();
 
+        #region Custom implementations
+
+            builder.Services.AddScoped<AccessTokensValidationEvents>();
+
+        #endregion
+    
+        #region Services
+    
+            builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+            builder.Services.AddScoped<IHealthService, HealthService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MainDbContext>>();
+            builder.Services.AddScoped<ICreaturesAndRolesInitializer, CreaturesAndRolesInitializer>();
+            builder.Services.AddScoped<IRolesService, RolesService>();
+            builder.Services.AddScoped<ICreaturesService, CreaturesService>();
+            builder.Services.AddScoped<ISessionsService, SessionsService>();
+    
+        #endregion
+    
     #endregion
 
     #region Singletions
@@ -258,7 +270,86 @@ builder.Services.AddControllers();
         }
     );
 
-#endregion    
+#endregion
+    
+#region Access token authentication
+
+    builder
+    .Services
+    .AddAuthentication
+    (
+        options
+        =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+    )
+    .AddJwtBearer();
+
+    builder
+    .Services
+    .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<AccessTokensSigningKey>
+    (
+        (options, signingKey)
+        =>
+        {
+            options.MapInboundClaims = false; // Preserve claim names: sub, sid, jti
+            
+            options.SaveToken = false; // Do not retain the raw token in authentication properties
+            
+            options.IncludeErrorDetails = false; // Do not expose validation error details to the client
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signingKey.Credentials.Key,
+
+                ValidAlgorithms =
+                [
+                    SecurityAlgorithms.RsaSha256
+                ],
+
+                ValidateIssuer = true,
+                ValidIssuer = Sessions.AccessTokenIssuer,
+
+                ValidateAudience = true,
+                RequireAudience = true,
+                ValidAudience = ratel_shared_auxiliary.Constants.Sessions.AccessTokenAudience,
+
+                ValidateLifetime = true,
+                RequireExpirationTime = true,
+                ClockSkew = TimeSpan.FromSeconds(Sessions.AccessTokenAllowedTimeSkew),
+
+                NameClaimType = "sub"
+            };
+
+            options.EventsType = typeof(AccessTokensValidationEvents);
+        }
+    );
+
+    builder
+    .Services
+    .AddAuthorization
+    (
+        options
+        =>
+        {
+            var requireAuthenticatedCreature = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+
+            options.DefaultPolicy = requireAuthenticatedCreature;
+            options.FallbackPolicy = requireAuthenticatedCreature;
+        }
+    );    
+    
+#endregion
     
 #region Swagger
 
@@ -452,7 +543,7 @@ _ = app.Services.GetRequiredService<AccessTokensSigningKey>(); // Check access t
 
     app.UseResponseCompression();
 
-    app.MapPrometheusScrapingEndpoint();
+    app.MapPrometheusScrapingEndpoint().AllowAnonymous();
 
     app
         .MapGroup(Microservice.UrlPrefix)

@@ -55,4 +55,9 @@ public static class Sessions
     /// Access token issuer name
     /// </summary>
     public const string AccessTokenIssuer = "ratel-creatures";
+
+    /// <summary>
+    /// Allowed time skew for access tokens validation in seconds
+    /// </summary>
+    public const int AccessTokenAllowedTimeSkew = 30;
 }
