@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using Microsoft.EntityFrameworkCore;
 using ratel_backend_creatures.DAO.Contexts;
 using ratel_backend_creatures.DAO.Models.Sessions;
 using ratel_backend_creatures.DAO.Services.Abstract;
 using ratel_backend_creatures.DAO.Services.Implementations.Sessions.Validators;
+using ratel_backend_creatures.Enums.Sessions;
 
 namespace ratel_backend_creatures.DAO.Services.Implementations.Sessions;
 
@@ -26,7 +28,7 @@ public class SessionsDao
     MainDbContext dbContext
 ) : ISessionsDao
 {
-    public async Task CreateSessionAsync
+    public Task CreateSessionAsync
     (
         CreatureSessionDbo session,
         CancellationToken cancellationToken
@@ -36,6 +38,30 @@ public class SessionsDao
 
         dbContext.CreatureSessions.Add(session);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<Tuple<bool, DateTime>?> GetSessionInfoAsync
+    (
+        Guid creatureId,
+        Guid sessionId,
+        CancellationToken cancellationToken
+    )
+    {
+        return dbContext
+            .CreatureSessions
+            .Where
+            (
+                s => s.CreatureId == creatureId && s.Id == sessionId
+            )
+            .Select
+            (
+                s => new Tuple<bool, DateTime>
+                (
+                    s.Events.Any(e => e.Type == SessionEventType.Revoked),
+                    s.Events.Max(e => e.OccurredAt)
+                )
+            )
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }

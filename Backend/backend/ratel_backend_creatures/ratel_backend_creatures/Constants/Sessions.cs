@@ -60,4 +60,9 @@ public static class Sessions
     /// Allowed time skew for access tokens validation in seconds
     /// </summary>
     public const int AccessTokenAllowedTimeSkew = 30;
+
+    /// <summary>
+    /// If session last update happened more than this days ago we will mark session as expired
+    /// </summary>
+    public const int SessionExpirationTime = 183;
 }

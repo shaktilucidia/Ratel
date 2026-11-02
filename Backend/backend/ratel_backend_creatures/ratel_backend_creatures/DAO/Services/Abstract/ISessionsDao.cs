@@ -33,4 +33,22 @@ public interface ISessionsDao
         CreatureSessionDbo session,
         CancellationToken cancellationToken = default
     );
+
+    /// <summary>
+    /// Get session information (use it during access token validity check)
+    /// </summary>
+    /// <param name="creatureId">Creature ID</param>
+    /// <param name="sessionId">Session ID</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>
+    /// Null if session is not found
+    /// First parameter - true if session revoked
+    /// Second parameter - DateTime of last activity in session
+    /// </returns>
+    Task<Tuple<bool, DateTime>?> GetSessionInfoAsync
+    (
+        Guid creatureId,
+        Guid sessionId,
+        CancellationToken cancellationToken = default
+    );
 }
