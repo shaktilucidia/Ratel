@@ -17,6 +17,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ratel_backend_creatures.DAO.Services.Abstract;
+using ratel_backend_creatures.Helpers.Sessions;
 using ratel_shared_auxiliary.Services.Abstract;
 
 namespace ratel_backend_creatures.CustomImplementations;
@@ -38,38 +39,43 @@ public class AccessTokensValidationEvents
     {
         ArgumentNullException.ThrowIfNull(context.Principal);
         
-        var creatureIdRaw = context
-            .Principal
-            .Claims
-            .Single(claim => claim.Type.Equals("sub"))
-            .Value;
-        
-        var sessionIdRaw = context
-            .Principal
-            .Claims
-            .Single(claim => claim.Type.Equals("sid"))
-            .Value;
-
-        if
-        (
-            !Guid.TryParse(creatureIdRaw, out var creatureId)
-            ||
-            creatureId == Guid.Empty
-        )
+        Guid creatureId;
+        try
         {
-            context.Fail($"Access token has an invalid creature ID, raw value = \"{ creatureIdRaw }\"");
+            creatureId = context
+                .Principal
+                .GetCreatureId();
+        }
+        catch (Exception e)
+        {
+            logger.LogError
+            (
+                e,
+                "Error during getting creature ID from access token"
+            );
+            
+            context.Fail($"Unable to get creature ID from access token");
 
             return;
         }
-
-        if
-        (
-            !Guid.TryParse(sessionIdRaw, out var sessionId)
-            ||
-            sessionId == Guid.Empty
-        )
+        
+        Guid sessionId;
+        try
         {
-            context.Fail($"Access token has an invalid session ID, raw value = \" { sessionIdRaw } \"");
+            sessionId = context
+                .Principal
+                .GetSessionId();
+        }
+        catch (Exception e)
+        {
+            logger.LogError
+            (
+                e,
+                "Error during getting session ID from access token"
+            );
+            
+            context.Fail($"Unable to get session ID from access token");
+
             return;
         }
 
@@ -94,7 +100,7 @@ public class AccessTokensValidationEvents
             return;
         }
 
-        if (sessionInfo!.Item1)
+        if (sessionInfo.Item1)
         {
             var rawToken = (context.SecurityToken as JwtSecurityToken)?.RawData; 
             
@@ -125,19 +131,18 @@ public class AccessTokensValidationEvents
             return;
         }
         
-        var sessionAge = (now - lastSessionEventTime).TotalDays;
+        var sessionExpirationTime = SessionsHelper.CalculateSessionExpirationTime(lastSessionEventTime);
 
-        if (sessionAge > Constants.Sessions.SessionExpirationTime)
+        if (sessionExpirationTime <= now)
         {
             logger.LogWarning
             (
-                "Attempt to use session {SessionID}, which expired {SessionAge} days ago",
+                "Attempt to use session {SessionID}, which expired at {ExpisationTime}",
                 sessionId,
-                sessionAge
+                sessionExpirationTime
             );
             
-            context.Fail($"Attempt to use session {sessionId}, which expired {sessionAge} days ago");
-            return;
+            context.Fail($"Attempt to use session {sessionId}, which expired at { sessionExpirationTime }");
         }
     }
 }

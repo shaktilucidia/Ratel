@@ -27,6 +27,7 @@ using ratel_shared_auxiliary.Extensions;
 using ratel_shared_auxiliary.Helpers;
 using ratel_shared_auxiliary.Services.Abstract;
 using ratel_shared_auxiliary.UoW.Abstract;
+using ratel_shared_auxiliary.Validators;
 
 namespace ratel_backend_creatures.Services.Implementation;
 
@@ -183,5 +184,13 @@ public class SessionsService
             accessToken.Value,
             accessToken.ExpiresAt
         );
+    }
+
+    public Task<Tuple<bool, DateTime>?> GetSessionInfoAsync(Guid creatureId, Guid sessionId, CancellationToken cancellationToken)
+    {
+        GuidsValidator.MustBeNonEmpty(creatureId);
+        GuidsValidator.MustBeNonEmpty(sessionId);
+        
+        return sessionsDao.GetSessionInfoAsync(creatureId, sessionId, cancellationToken);
     }
 }

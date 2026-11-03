@@ -64,5 +64,20 @@ public static class Sessions
     /// <summary>
     /// If session last update happened more than this days ago we will mark session as expired
     /// </summary>
-    public const int SessionExpirationTime = 183;
+    public const int SessionLifetime = 183;
+
+    /// <summary>
+    /// Creature ID claim type
+    /// </summary>
+    public const string CreatureIdClaimType = "sub";
+    
+    /// <summary>
+    /// Session ID claim type
+    /// </summary>
+    public const string SessionIdClaimType = "sid";
+    
+    /// <summary>
+    /// Access token expiration claim type
+    /// </summary>
+    public const string AccessTokenExpirationTimeClaimType = "exp";
 }

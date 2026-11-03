@@ -319,7 +319,7 @@ builder.Services.AddControllers();
                 RequireExpirationTime = true,
                 ClockSkew = TimeSpan.FromSeconds(Sessions.AccessTokenAllowedTimeSkew),
 
-                NameClaimType = "sub"
+                NameClaimType = Sessions.CreatureIdClaimType
             };
 
             options.EventsType = typeof(AccessTokensValidationEvents);

@@ -16,8 +16,11 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ratel_backend_creatures_dtos.Sessions.DTOs;
 using ratel_backend_creatures_dtos.Sessions.Extensions;
 using ratel_backend_creatures_dtos.Sessions.Requests;
+using ratel_backend_creatures_dtos.Sessions.Responses;
+using ratel_backend_creatures.Helpers.Sessions;
 using ratel_backend_creatures.Services.Abstract;
 using ratel_shared_auxiliary.Controllers;
 
@@ -67,19 +70,35 @@ public class SessionsController
     }
     
     /// <summary>
-    /// TODO: Delete it, just for debugging
+    /// Get current session information
     /// </summary>
     [Authorize]
-    [HttpGet("current_session")]
-    public IActionResult GetCurrentSession()
+    [HttpGet("info")]
+    public async Task<ActionResult<SessionInfoResponse>> GetCurrentSessionInfoAsync(CancellationToken cancellationToken)
     {
-        var creatureId = Guid.Parse(User.FindFirst("sub")!.Value);
-        var sessionId = Guid.Parse(User.FindFirst("sid")!.Value);
-
-        return Ok(new
-        {
-            CreatureId = creatureId,
-            SessionId = sessionId
-        });
+        var creatureId = User.GetCreatureId();
+        var sessionId = User.GetSessionId();
+        var sessionInfo = await sessionsService
+            .GetSessionInfoAsync
+            (
+                creatureId,
+                sessionId,
+                cancellationToken
+            );
+        
+        return Ok
+        (
+            new SessionInfoResponse()
+            {
+                SessionInfo = new SessionInfoDto()
+                {
+                    CreatureId = creatureId,
+                    SessionId = sessionId,
+                    // Session is already validated in token validator and can't be null
+                    SessionValidTill = SessionsHelper.CalculateSessionExpirationTime(sessionInfo!.Item2),
+                    AccessTokenValidTill = User.GetAccessTokenExpirationTime()
+                }
+            }
+        );
     }
 }

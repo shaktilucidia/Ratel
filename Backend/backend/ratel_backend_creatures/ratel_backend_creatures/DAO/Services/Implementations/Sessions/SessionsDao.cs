@@ -20,6 +20,7 @@ using ratel_backend_creatures.DAO.Models.Sessions;
 using ratel_backend_creatures.DAO.Services.Abstract;
 using ratel_backend_creatures.DAO.Services.Implementations.Sessions.Validators;
 using ratel_backend_creatures.Enums.Sessions;
+using ratel_shared_auxiliary.Validators;
 
 namespace ratel_backend_creatures.DAO.Services.Implementations.Sessions;
 
@@ -48,6 +49,9 @@ public class SessionsDao
         CancellationToken cancellationToken
     )
     {
+        GuidsValidator.MustBeNonEmpty(creatureId);
+        GuidsValidator.MustBeNonEmpty(sessionId);
+        
         return dbContext
             .CreatureSessions
             .Where

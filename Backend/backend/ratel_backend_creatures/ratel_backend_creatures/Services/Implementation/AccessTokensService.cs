@@ -61,8 +61,8 @@ public class AccessTokensService
 
             Subject = new ClaimsIdentity(
             [
-                new Claim("sub", creatureId.ToString()),
-                new Claim("sid", sessionId.ToString()),
+                new Claim(Constants.Sessions.CreatureIdClaimType, creatureId.ToString()),
+                new Claim(Constants.Sessions.SessionIdClaimType, sessionId.ToString()),
                 new Claim("jti", SecureGuidGenerator.Generate().ToString())
             ]),
 
