@@ -132,12 +132,12 @@ public class AccessTokensValidationEvents
         }
         
         var sessionExpirationTime = SessionsHelper.CalculateSessionExpirationTime(lastSessionEventTime);
-
-        if (sessionExpirationTime <= now)
+        
+        if (SessionsHelper.IsSessionExpired(now, sessionExpirationTime))
         {
             logger.LogWarning
             (
-                "Attempt to use session {SessionID}, which expired at {ExpisationTime}",
+                "Attempt to use session {SessionID}, which expired at {ExpirationTime}",
                 sessionId,
                 sessionExpirationTime
             );

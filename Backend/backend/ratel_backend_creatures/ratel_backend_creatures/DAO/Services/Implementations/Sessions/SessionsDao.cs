@@ -20,13 +20,15 @@ using ratel_backend_creatures.DAO.Models.Sessions;
 using ratel_backend_creatures.DAO.Services.Abstract;
 using ratel_backend_creatures.DAO.Services.Implementations.Sessions.Validators;
 using ratel_backend_creatures.Enums.Sessions;
+using ratel_shared_auxiliary.Services.Abstract;
 using ratel_shared_auxiliary.Validators;
 
 namespace ratel_backend_creatures.DAO.Services.Implementations.Sessions;
 
 public class SessionsDao
 (
-    MainDbContext dbContext
+    MainDbContext dbContext,
+    ITimeProvider timeProvider
 ) : ISessionsDao
 {
     public Task CreateSessionAsync
@@ -67,5 +69,58 @@ public class SessionsDao
                 )
             )
             .SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<CreatureSessionDbo>> ListSessionsForCreatureAsync
+    (
+        Guid creatureId,
+        bool isListExpired,
+        bool isListRevoked,
+        CancellationToken cancellationToken
+    )
+    {
+        GuidsValidator.MustBeNonEmpty(creatureId);
+
+        var now = timeProvider.GetNow();
+
+        var query = dbContext
+            .CreatureSessions
+            .Include(s => s.Events)
+            .Include(s => s.RefreshTokens)
+            .Where
+            (
+                s => s.CreatureId == creatureId
+            );
+
+        if (!isListExpired)
+        {
+            query = query.Where
+            (
+                s
+                =>
+                s
+                    .Events
+                    .Max(e => e.OccurredAt)
+                    .AddDays(Constants.Sessions.SessionLifetime) > now
+            );
+        }
+        
+        if (!isListRevoked)
+        {
+            query = query.Where
+            (
+                s
+                =>
+                s
+                    .Events
+                    .All(e => e.Type != SessionEventType.Revoked));
+        }
+        
+        return
+        (
+            await query
+            .ToListAsync(cancellationToken)
+        )
+        .AsReadOnly();
     }
 }

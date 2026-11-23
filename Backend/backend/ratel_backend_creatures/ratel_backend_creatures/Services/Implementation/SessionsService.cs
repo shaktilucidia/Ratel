@@ -193,4 +193,48 @@ public class SessionsService
         
         return sessionsDao.GetSessionInfoAsync(creatureId, sessionId, cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection
+    <
+        (
+            Guid id,
+            string name,
+            bool isExpired,
+            bool isRevoked,
+            DateTime lastActivityTime,
+            IPAddress lastActivitySource,
+            string lastActivityDeviceInfo
+        )
+    >> ListSessionsForCreatureAsync
+    (
+        Guid creatureId,
+        bool isListExpired,
+        bool isListRevoked,
+        CancellationToken cancellationToken
+    )
+    {
+        var now = timeProvider.GetNow();
+        
+        return (await sessionsDao
+            .ListSessionsForCreatureAsync(creatureId, isListExpired, isListRevoked, cancellationToken))
+            .Select
+            (
+                s
+                =>
+                {
+                    var lastEvent = s.Events.MaxBy(e => e.OccurredAt)!; 
+                    
+                    return (
+                        s.Id,
+                        s.Name,
+                        SessionsHelper.IsSessionExpired(now, lastEvent.OccurredAt),
+                        s.Events.Any(e => e.Type == SessionEventType.Revoked),
+                        lastEvent.OccurredAt,
+                        lastEvent.Source,
+                        lastEvent.DeviceInfo
+                    );
+                }
+            )
+            .ToList();
+    }
 }

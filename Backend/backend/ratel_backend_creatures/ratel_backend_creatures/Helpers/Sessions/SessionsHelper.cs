@@ -32,4 +32,18 @@ public static class SessionsHelper
         
         return sessionLastActivityTime.AddDays(Constants.Sessions.SessionLifetime);
     }
+
+    /// <summary>
+    /// Returns true, if session expired
+    /// </summary>
+    public static bool IsSessionExpired
+    (
+        DateTime now,
+        DateTime sessionLastActivityTime
+    )
+    {
+        DatesTimesValidator.MustBeUtcAndNotDefault(now);
+        
+        return CalculateSessionExpirationTime(sessionLastActivityTime) <= now;
+    }
 }

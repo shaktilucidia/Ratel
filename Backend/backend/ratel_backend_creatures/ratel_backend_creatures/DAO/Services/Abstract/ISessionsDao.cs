@@ -51,4 +51,20 @@ public interface ISessionsDao
         Guid sessionId,
         CancellationToken cancellationToken = default
     );
+    
+    /// <summary>
+    /// List sessions for creature
+    /// </summary>
+    /// <param name="creatureId">Creature ID</param>
+    /// <param name="isListExpired">True if it is needed to list expired sessions</param>
+    /// <param name="isListRevoked">Ture if it is needed to list revoked sessions</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Collection with sessions</returns>
+    Task<IReadOnlyCollection<CreatureSessionDbo>> ListSessionsForCreatureAsync
+    (
+        Guid creatureId,
+        bool isListExpired = false,
+        bool isListRevoked = false,
+        CancellationToken cancellationToken = default
+    );
 }

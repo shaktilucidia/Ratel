@@ -101,4 +101,55 @@ public class SessionsController
             }
         );
     }
+
+    /// <summary>
+    /// Creature's sessions
+    /// </summary>
+    [Authorize]
+    [HttpPost("list")]
+    public async Task<ActionResult<SessionInfoResponse>> ListSessionsAsync
+    (
+        [FromBody] ListSessionsRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        
+        var creatureId = User.GetCreatureId();
+
+        return Ok
+        (
+            new ListSessionsResponse()
+            {
+                Sessions
+                =
+                (
+                    await sessionsService
+                        .ListSessionsForCreatureAsync
+                        (
+                            creatureId,
+                            request.Parameters.IsListExpired,
+                            request.Parameters.IsListRevoked,
+                            cancellationToken
+                        )
+                )
+                .Select
+                (
+                    sessionInfo
+                    =>
+                    new ListSessionsResponseDto()
+                    {
+                        Id = sessionInfo.Item1,
+                        Name = sessionInfo.Item2,
+                        IsExpired = sessionInfo.Item3,
+                        IsRevoked = sessionInfo.Item4,
+                        LastActivityTime = sessionInfo.Item5,
+                        LastActivitySource = sessionInfo.Item6,
+                        LastActivityDeviceInfo = sessionInfo.Item7
+                    }
+                )
+                .ToList()
+            }
+        );
+    }
 }

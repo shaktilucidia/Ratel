@@ -40,6 +40,7 @@ using ratel_backend_creatures.Services.Abstract;
 using ratel_backend_creatures.Services.Implementation;
 using ratel_shared_auxiliary.Helpers;
 using ratel_shared_auxiliary.Models.Settings;
+using ratel_shared_auxiliary.Serializers;
 using ratel_shared_auxiliary.Services.Abstract;
 using ratel_shared_auxiliary.UoW.Abstract;
 using ratel_shared_auxiliary.UoW.Implementations;
@@ -131,7 +132,16 @@ var builder = WebApplication.CreateBuilder(cleanedFromModeArgs);
 
 #endregion
 
-builder.Services.AddControllers();
+    builder
+    .Services
+    .AddControllers()
+    .AddJsonOptions
+    (
+        options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new IpAddressConverter());
+        }
+    );
 
 #region Compression
     builder.Services.AddResponseCompression(options =>
