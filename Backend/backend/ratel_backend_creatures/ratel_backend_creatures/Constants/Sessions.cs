@@ -32,11 +32,6 @@ public static class Sessions
     public const int RefreshTokenHashHexStringLength = 128;
 
     /// <summary>
-    /// Refresh token lifetime in days
-    /// </summary>
-    public const int RefreshTokenLifetime = 30;
-
-    /// <summary>
     /// Session default name length
     /// </summary>
     public const int SessionDefaultNameLength = 24;

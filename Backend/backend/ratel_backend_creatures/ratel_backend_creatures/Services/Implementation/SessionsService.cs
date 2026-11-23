@@ -41,7 +41,15 @@ public class SessionsService
     IAccessTokensService accessTokensService
 ) : ISessionsService
 {
-    public async Task<Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>> CreateAsync
+    public async Task
+    <
+        (
+            IReadOnlySet<SessionCreationError> errors,
+            string? refreshToken,
+            string? accessToken,
+            DateTime? accessTokenExpiration
+        )
+    > CreateAsync
     (
         string login,
         string password,
@@ -66,7 +74,7 @@ public class SessionsService
         
         if (errors.Count > 0)
         {
-            return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
+            return
             (
                 errors,
                 null,
@@ -79,7 +87,7 @@ public class SessionsService
 
         if (creature is null)
         {
-            return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
+            return
             (
                 new HashSet<SessionCreationError>()
                 {
@@ -105,7 +113,7 @@ public class SessionsService
 
         if (!result.Succeeded)
         {
-            return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
+            return
             (
                 new HashSet<SessionCreationError>()
                 {
@@ -139,7 +147,7 @@ public class SessionsService
                         SessionId = sessionId,
                         Hash = SessionsRefreshTokensHelper.Hash(refreshToken),
                         CreatedAt = now,
-                        ExpiresAt = now.AddDays(Constants.Sessions.RefreshTokenLifetime),
+                        ExpiresAt = now.AddDays(Constants.Sessions.SessionLifetime),
                         UsedAt = null
                     }
                 },
@@ -177,7 +185,7 @@ public class SessionsService
         
         await transaction.CommitAsync(cancellationToken);
 
-        return new Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>
+        return
         (
             new HashSet<SessionCreationError>(),
             refreshToken,
@@ -186,7 +194,13 @@ public class SessionsService
         );
     }
 
-    public Task<Tuple<bool, DateTime>?> GetSessionInfoAsync(Guid creatureId, Guid sessionId, CancellationToken cancellationToken)
+    public Task
+    <
+        (
+            bool isRevoked,
+            DateTime lastActivityTime
+        )?
+    > GetSessionInfoAsync(Guid creatureId, Guid sessionId, CancellationToken cancellationToken)
     {
         GuidsValidator.MustBeNonEmpty(creatureId);
         GuidsValidator.MustBeNonEmpty(sessionId);

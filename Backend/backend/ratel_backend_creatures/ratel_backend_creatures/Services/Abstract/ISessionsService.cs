@@ -34,7 +34,15 @@ public interface ISessionsService
     /// <param name="deviceInfo">This device is trying to create a session</param>
     /// <returns>Tuple with errors, refresh token, access token and access token lifetime
     /// Tokens and lifetime aren't null only if there are no errors</returns>
-    Task<Tuple<IReadOnlySet<SessionCreationError>, string?, string?, DateTime?>> CreateAsync
+    Task
+    <
+        (
+            IReadOnlySet<SessionCreationError> errors,
+            string? refreshToken,
+            string? accessToken,
+            DateTime? accessTokenExpiration
+        )
+    > CreateAsync
     (
         string login,
         string password,
@@ -54,7 +62,13 @@ public interface ISessionsService
     /// First parameter - true if session revoked
     /// Second parameter - DateTime of last activity in session
     /// </returns>
-    Task<Tuple<bool, DateTime>?> GetSessionInfoAsync
+    Task
+    <
+        (
+            bool isRevoked,
+            DateTime lastActivityTime
+        )?
+    > GetSessionInfoAsync
     (
         Guid creatureId,
         Guid sessionId,

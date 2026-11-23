@@ -100,7 +100,7 @@ public class AccessTokensValidationEvents
             return;
         }
 
-        if (sessionInfo.Item1)
+        if (sessionInfo.Value.isRevoked)
         {
             var rawToken = (context.SecurityToken as JwtSecurityToken)?.RawData; 
             
@@ -116,7 +116,7 @@ public class AccessTokensValidationEvents
         }
 
         var now = timeProvider.GetNow();
-        var lastSessionEventTime = sessionInfo.Item2;
+        var lastSessionEventTime = sessionInfo.Value.lastActivityTime;
 
         if (now < lastSessionEventTime)
         {

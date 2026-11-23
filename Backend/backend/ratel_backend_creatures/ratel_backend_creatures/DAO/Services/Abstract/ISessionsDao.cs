@@ -45,7 +45,13 @@ public interface ISessionsDao
     /// First parameter - true if session revoked
     /// Second parameter - DateTime of last activity in session
     /// </returns>
-    Task<Tuple<bool, DateTime>?> GetSessionInfoAsync
+    Task
+    <
+        (
+            bool isRevoked,
+            DateTime lastActivityTime
+        )?
+    > GetSessionInfoAsync
     (
         Guid creatureId,
         Guid sessionId,

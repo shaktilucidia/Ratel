@@ -44,7 +44,13 @@ public class SessionsDao
         return dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<Tuple<bool, DateTime>?> GetSessionInfoAsync
+    public Task
+    <
+        (
+            bool isRevoked,
+            DateTime lastActivityTime
+        )?
+    > GetSessionInfoAsync
     (
         Guid creatureId,
         Guid sessionId,
@@ -68,7 +74,8 @@ public class SessionsDao
                     s.Events.Max(e => e.OccurredAt)
                 )
             )
-            .SingleOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken)
+            .ContinueWith(t => t.Result?.ToValueTuple(), cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<CreatureSessionDbo>> ListSessionsForCreatureAsync

@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ratel_backend_creatures_dtos.Sessions.DTOs;
+using ratel_backend_creatures_dtos.Sessions.Enums;
 using ratel_backend_creatures_dtos.Sessions.Extensions;
 using ratel_backend_creatures_dtos.Sessions.Requests;
 using ratel_backend_creatures_dtos.Sessions.Responses;
@@ -62,10 +63,10 @@ public class SessionsController
         return this
             .ToActionResult
             (
-                result.Item1,
-                result.Item2,
-                result.Item3,
-                result.Item4
+                result.errors,
+                result.refreshToken,
+                result.accessToken,
+                result.accessTokenExpiration
             );
     }
     
@@ -95,7 +96,7 @@ public class SessionsController
                     CreatureId = creatureId,
                     SessionId = sessionId,
                     // Session is already validated in token validator and can't be null
-                    SessionValidTill = SessionsHelper.CalculateSessionExpirationTime(sessionInfo!.Item2),
+                    SessionValidTill = SessionsHelper.CalculateSessionExpirationTime(sessionInfo!.Value.lastActivityTime),
                     AccessTokenValidTill = User.GetAccessTokenExpirationTime()
                 }
             }
@@ -139,17 +140,39 @@ public class SessionsController
                     =>
                     new ListSessionsResponseDto()
                     {
-                        Id = sessionInfo.Item1,
-                        Name = sessionInfo.Item2,
-                        IsExpired = sessionInfo.Item3,
-                        IsRevoked = sessionInfo.Item4,
-                        LastActivityTime = sessionInfo.Item5,
-                        LastActivitySource = sessionInfo.Item6,
-                        LastActivityDeviceInfo = sessionInfo.Item7
+                        Id = sessionInfo.id,
+                        Name = sessionInfo.name,
+                        IsExpired = sessionInfo.isExpired,
+                        IsRevoked = sessionInfo.isRevoked,
+                        LastActivityTime = sessionInfo.lastActivityTime,
+                        LastActivitySource = sessionInfo.lastActivitySource,
+                        LastActivityDeviceInfo = sessionInfo.lastActivityDeviceInfo
                     }
                 )
                 .ToList()
             }
         );
+    }
+
+    /// <summary>
+    /// Get new access / refresh tokens
+    /// </summary>
+    [AllowAnonymous]
+    [Route("refresh")]
+    [HttpPost]
+    public async Task<IActionResult> RefreshAccessTokenAsync
+    (
+        [FromBody] RefreshAccessTokenRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        return this
+            .ToActionResult
+            (
+                new HashSet<RefreshAccessTokenError>(),
+                "YiffyRefreshToken",
+                "YuffyAccessToken",
+                DateTime.UtcNow
+            );
     }
 }

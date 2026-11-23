@@ -149,10 +149,10 @@ public static class SessionCreationResultExtension
                         (
                             e => e.Key,
                             e => e.Select
-                                (
-                                    e => _errorsToDescriptions[e]
-                                )
-                                .ToArray()
+                            (
+                                e => _errorsToDescriptions[e]
+                            )
+                            .ToArray()
                         )
                 )
                 {
