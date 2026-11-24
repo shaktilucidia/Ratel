@@ -147,7 +147,6 @@ public class SessionsService
                         SessionId = sessionId,
                         Hash = SessionsRefreshTokensHelper.Hash(refreshToken),
                         CreatedAt = now,
-                        ExpiresAt = now.AddDays(Constants.Sessions.SessionLifetime),
                         UsedAt = null
                     }
                 },

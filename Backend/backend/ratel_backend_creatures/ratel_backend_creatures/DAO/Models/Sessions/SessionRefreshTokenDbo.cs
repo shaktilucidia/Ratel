@@ -42,11 +42,6 @@ public sealed class SessionRefreshTokenDbo
     public DateTime CreatedAt { get; set; }
 
     /// <summary>
-    /// Token must be used before this time
-    /// </summary>
-    public DateTime ExpiresAt { get; set; }
-
-    /// <summary>
     /// Use time, populated if token was used
     /// </summary>
     public DateTime? UsedAt { get; set; }

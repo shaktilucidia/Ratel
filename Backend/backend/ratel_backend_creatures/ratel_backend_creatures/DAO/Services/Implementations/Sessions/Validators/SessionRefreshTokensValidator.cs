@@ -66,18 +66,12 @@ public static class SessionRefreshTokensValidator
         ValidateTokenHashFormat(token.Hash);
         
         DatesTimesValidator.MustBeUtcAndNotDefault(token.CreatedAt);
-        DatesTimesValidator.MustBeUtcAndNotDefault(token.ExpiresAt);
-
-        if (token.ExpiresAt <= token.CreatedAt)
-        {
-            throw new ArgumentException("ExpiresAt time is less or equal CreatedAt");
-        }
 
         if (token.UsedAt.HasValue)
         {
             DatesTimesValidator.MustBeUtcAndNotDefault(token.UsedAt.Value);
 
-            if (token.UsedAt.Value >= token.ExpiresAt || token.UsedAt.Value <= token.CreatedAt)
+            if (token.UsedAt.Value <= token.CreatedAt)
             {
                 throw new ArgumentException("Wrong token usage date", nameof(token.UsedAt));
             }
