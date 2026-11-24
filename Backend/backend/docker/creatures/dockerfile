@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 
 WORKDIR /source
 
@@ -31,7 +31,7 @@ RUN --mount=type=cache,id=ratel-nuget,target=/root/.nuget/packages,sharing=locke
     -o /app \
     --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime-base
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime-base
 
 WORKDIR /app
 
